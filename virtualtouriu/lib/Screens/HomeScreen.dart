@@ -104,7 +104,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           Text(
             "VIRTUAL TOUR",
-            style: TextStyle(
+            style: GoogleFonts.roboto(
               fontSize: isMobile ? 14 : 16,
               color: Theme.of(context).primaryColor,
               fontWeight: FontWeight.bold,
@@ -113,7 +113,7 @@ class HomeScreen extends StatelessWidget {
           SizedBox(height: size.height * 0.015),
           Text(
             "Explore Iqra University",
-            style: TextStyle(
+            style: GoogleFonts.roboto(
               fontSize: isMobile ? 24 : 28,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -122,7 +122,7 @@ class HomeScreen extends StatelessWidget {
           SizedBox(height: size.height * 0.015),
           Text(
             "Take an interactive tour of our modern facilities.",
-            style: TextStyle(
+            style: GoogleFonts.roboto(
               fontSize: isMobile ? 14 : 16,
               color: Theme.of(
                 context,
@@ -145,7 +145,7 @@ class HomeScreen extends StatelessWidget {
                 vertical: size.height * 0.015,
               ),
             ),
-            child: const Text("Start Tour"),
+            child: Text("Start Tour", style: GoogleFonts.roboto()),
           ),
         ],
       ),
