@@ -16,6 +16,7 @@ class ThemeProvider with ChangeNotifier {
 
 final ThemeData _lightTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
+  secondaryHeaderColor: Colors.transparent,
   primaryColor: Colors.orange,
   cardColor: Colors.white,
   textTheme: TextTheme(
@@ -36,6 +37,7 @@ final ThemeData _lightTheme = ThemeData(
 );
 
 final ThemeData _darkTheme = ThemeData(
+  secondaryHeaderColor: Colors.transparent,
   scaffoldBackgroundColor: Colors.grey[900],
   primaryColor: Colors.orange,
   cardColor: Colors.grey[850],

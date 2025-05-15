@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:virtualtouriu/Reponsive/Responsive_Layout.dart';
@@ -6,7 +7,6 @@ import 'package:virtualtouriu/Screens/categories.dart';
 import 'package:virtualtouriu/Screens/desktop_home_screen.dart';
 import 'package:virtualtouriu/Screens/mobile_home_screen.dart';
 import 'package:virtualtouriu/Screens/tablet_home_screen.dart';
-
 import 'package:virtualtouriu/core/constants.dart';
 import 'package:virtualtouriu/core/widgets/location_card.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
@@ -16,30 +16,33 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDark;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Virtual Tour'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Provider.of<ThemeProvider>(context).isDark
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
+      body: Stack(
+        children: [
+          // Main responsive layout filling entire screen
+          const ResponsiveLayout(
+            mobileBody: MobileHomeScreen(),
+            tabletBody: TabletHomeScreen(),
+            desktopBody: DesktopHomeScreen(),
+          ),
+
+          // Theme switcher button at top right
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: IconButton(
+                  icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+                  onPressed: () => themeProvider.toggleTheme(),
+                ),
+              ),
             ),
-            onPressed:
-                () =>
-                    Provider.of<ThemeProvider>(
-                      context,
-                      listen: false,
-                    ).toggleTheme(),
           ),
         ],
-      ),
-      body: const ResponsiveLayout(
-        mobileBody: MobileHomeScreen(),
-        tabletBody: TabletHomeScreen(),
-        desktopBody: DesktopHomeScreen(),
       ),
     );
   }
@@ -76,7 +79,7 @@ class HomeScreen extends StatelessWidget {
             left: size.width * 0.05,
             child: Text(
               'IQRA UNIVERSITY',
-              style: TextStyle(
+              style: GoogleFonts.roboto(
                 color: Colors.white,
                 fontSize: fontSize.clamp(20, 50),
                 fontWeight: FontWeight.bold,
@@ -205,7 +208,7 @@ class HomeScreen extends StatelessWidget {
                     ),
           ),
           Padding(
-            padding: EdgeInsets.only(right: size.width * 0.05, top: 10),
+            padding: EdgeInsets.only(right: size.width * 0.50, top: 15),
             child: SmoothPageIndicator(
               controller: controller,
               count: locationCards.length,
@@ -237,7 +240,7 @@ class HomeScreen extends StatelessWidget {
   ) {
     final size = MediaQuery.of(context).size;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       margin: EdgeInsets.symmetric(horizontal: size.width * 0.02),
       transform:
           tappedIndex == index

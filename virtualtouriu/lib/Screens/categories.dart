@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
 
@@ -79,7 +80,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   onEnter: (_) => setState(() => _hoveredIndex = index),
                   onExit: (_) => setState(() => _hoveredIndex = -1),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 50),
                     decoration: BoxDecoration(
                       color:
                           isHovered
@@ -92,9 +93,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 BoxShadow(
                                   color: Theme.of(
                                     context,
-                                  ).primaryColor.withOpacity(0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
+                                  ).primaryColor.withOpacity(0.2),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 10),
                                 ),
                               ]
                               : [],
@@ -102,7 +103,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     child: Center(
                       child: Text(
                         locations[index],
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: GoogleFonts.roboto(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
