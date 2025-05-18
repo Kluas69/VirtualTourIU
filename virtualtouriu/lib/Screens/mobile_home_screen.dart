@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:virtualtouriu/Screens/HomeScreen.dart';
 import 'package:virtualtouriu/core/constants.dart';
 
+// Mobile-specific home screen widget
 class MobileHomeScreen extends StatefulWidget {
   const MobileHomeScreen({super.key});
 
@@ -12,7 +13,7 @@ class MobileHomeScreen extends StatefulWidget {
 
 class _MobileHomeScreenState extends State<MobileHomeScreen> {
   PageController? _controller;
-  int _tappedIndex = -1;
+  int _selectedIndex = -1;
   Timer? _shuffleTimer;
   bool _isInteracting = false;
 
@@ -22,6 +23,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     _startShuffleTimer();
   }
 
+  // Starts a timer to shuffle location cards every 5 seconds
   void _startShuffleTimer() {
     _shuffleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (!_isInteracting && mounted) {
@@ -42,6 +44,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = MediaQuery.of(context).size;
+        // Responsive dimensions for mobile
         final heroHeight = (size.height * 0.35).clamp(250.0, 400.0);
         final paddingHorizontal = (size.width * 0.05).clamp(8.0, 32.0);
         final paddingVertical = (size.height * 0.03).clamp(8.0, 24.0);
@@ -56,21 +59,24 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                 ? 0.65
                 : 0.75;
 
+        // Initialize PageController with responsive viewport fraction
         _controller?.dispose();
         _controller = PageController(viewportFraction: viewportFraction);
 
         return SingleChildScrollView(
           child: Column(
             children: [
+              // Hero section with university branding
               SizedBox(
                 height: heroHeight,
                 width: double.infinity,
                 child: HomeScreen.buildHeroSection(
-                  context,
+                  context: context,
                   fontSize: fontSize,
                   heightFactor: 1.0,
                 ),
               ),
+              // Info section with tour description and start button
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: paddingHorizontal,
@@ -78,8 +84,12 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                 ),
                 width: double.infinity,
                 constraints: BoxConstraints(maxWidth: infoMaxWidth),
-                child: HomeScreen.buildInfoSection(context, isMobile: true),
+                child: HomeScreen.buildInfoSection(
+                  context: context,
+                  isMobile: true,
+                ),
               ),
+              // Carousel section for location cards
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: paddingHorizontal,
@@ -87,26 +97,26 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                 ),
                 width: double.infinity,
                 child: HomeScreen.buildCarousel(
-                  context,
+                  context: context,
                   cardHeight: cardHeight,
                   controller: _controller!,
-                  tappedIndex: _tappedIndex,
+                  selectedIndex: _selectedIndex,
                   isInteracting: _isInteracting,
                   onTap:
                       (index) => setState(() {
-                        _tappedIndex = _tappedIndex == index ? -1 : index;
+                        _selectedIndex = _selectedIndex == index ? -1 : index;
                         _isInteracting = false;
                       }),
                   setInteracting:
                       (value) => setState(() => _isInteracting = value),
                   onPageChanged:
                       (index) => setState(() {
-                        _tappedIndex = index;
+                        _selectedIndex = index;
                         _isInteracting = false;
                       }),
                 ),
               ),
-              SizedBox(height: paddingVertical * 2),
+              SizedBox(height: paddingVertical * 2), // Bottom spacing
             ],
           ),
         );
