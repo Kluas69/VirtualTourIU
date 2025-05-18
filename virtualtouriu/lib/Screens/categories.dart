@@ -165,7 +165,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   crossAxisCount: crossAxisCount,
                                   crossAxisSpacing: 16.0,
                                   mainAxisSpacing: 16.0,
-                                  childAspectRatio: 3.0,
+                                  childAspectRatio: 6,
                                 ),
                             itemBuilder:
                                 (context, index) => _buildGridItem(
@@ -244,7 +244,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             );
           },
           child: AnimatedScale(
-            scale: isHovered ? 1.05 : 1.0,
+            scale: isHovered ? 1.001 : 1.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
             child: Container(
@@ -268,8 +268,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         isHovered
                             ? theme.primaryColor.withOpacity(0.4)
                             : Colors.black.withOpacity(0.1),
-                    blurRadius: isHovered ? 8.0 : 6.0,
-                    offset: Offset(0, isHovered ? 6.0 : 4.0),
+                    blurRadius: isHovered ? 7.0 : 6.0,
+                    offset: Offset(0, isHovered ? 5.0 : 4.0),
                   ),
                 ],
                 border: Border.all(

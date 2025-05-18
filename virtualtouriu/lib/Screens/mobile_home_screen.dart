@@ -28,7 +28,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
       if (mounted) {
         setState(() {
           _controller = PageController(
-            viewportFraction: 0.55,
+            viewportFraction: 0.5,
             initialPage: middleIndex,
           );
           _selectedIndex = middleIndex;
@@ -103,7 +103,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                           child: HomeScreen.buildHeroSection(
                             context: context,
                             fontSize: fontSize,
-                            heightFactor: 0.6,
+                            heightFactor: 0.5,
                           ),
                         ),
                       ),
