@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:virtualtouriu/Screens/HomeScreen.dart';
 import 'package:virtualtouriu/core/constants.dart';
 
-// Desktop-specific home screen widget
 class DesktopHomeScreen extends StatefulWidget {
   const DesktopHomeScreen({super.key});
 
@@ -23,7 +22,6 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
     _startShuffleTimer();
   }
 
-  // Starts a timer to shuffle location cards every 3 seconds
   void _startShuffleTimer() {
     _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!_isInteracting && mounted) {
@@ -45,28 +43,29 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
       builder: (context, constraints) {
         final size = MediaQuery.of(context).size;
         // Responsive dimensions for desktop
-        final heroHeight = (size.height * 0.4).clamp(300.0, 500.0);
-        final paddingHorizontal = (size.width * 0.05).clamp(16.0, 64.0);
-        final paddingVertical = (size.height * 0.03).clamp(16.0, 32.0);
-        final fontSize = (size.width * 0.05).clamp(20.0, 50.0);
-        final cardHeight = (size.height * 0.35).clamp(200.0, 600.0);
-        final infoMaxWidth =
-            constraints.maxWidth > 1200 ? 800.0 : constraints.maxWidth * 0.9;
+        final heroHeight = (size.height * 0.45).clamp(400.0, 650.0);
+        final paddingHorizontal = (size.width * 0.07).clamp(20.0, 33.0);
+        final paddingVertical = (size.height * 0.05).clamp(24.0, 48.0);
+        final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
+        final cardHeight = (size.height * 0.33).clamp(300.0, 1200.0);
         final viewportFraction =
-            constraints.maxWidth > 1200
-                ? 0.40
-                : constraints.maxWidth > 800
-                ? 0.45
-                : 0.50;
+            constraints.maxWidth > 1800
+                ? 0.25
+                : constraints.maxWidth > 1400
+                ? 0.35
+                : constraints.maxWidth > 1000
+                ? 0.4
+                : 0.45;
 
-        // Initialize PageController with responsive viewport fraction
         _controller?.dispose();
-        _controller = PageController(viewportFraction: viewportFraction);
+        _controller = PageController(
+          viewportFraction: viewportFraction,
+          initialPage: 0,
+        );
 
         return SingleChildScrollView(
           child: Column(
             children: [
-              // Hero section with university branding
               SizedBox(
                 height: heroHeight,
                 width: double.infinity,
@@ -76,20 +75,17 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                   heightFactor: 1.0,
                 ),
               ),
-              // Info section with tour description and start button
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: paddingHorizontal,
                   vertical: paddingVertical,
                 ),
                 width: double.infinity,
-                constraints: BoxConstraints(maxWidth: infoMaxWidth),
                 child: HomeScreen.buildInfoSection(
                   context: context,
                   isMobile: false,
                 ),
               ),
-              // Carousel section for location cards
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: paddingHorizontal,
@@ -117,7 +113,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                   isDesktop: true,
                 ),
               ),
-              SizedBox(height: paddingVertical * 2), // Bottom spacing
+              SizedBox(height: paddingVertical * 2),
             ],
           ),
         );

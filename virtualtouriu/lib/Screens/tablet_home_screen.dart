@@ -23,9 +23,9 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
     _startShuffleTimer();
   }
 
-  // Starts a timer to shuffle location cards every 5 seconds
+  // Starts a timer to shuffle location cards every 3 seconds to match desktop
   void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!_isInteracting && mounted) {
         setState(() => locationCards.shuffle());
       }
@@ -45,23 +45,28 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
       builder: (context, constraints) {
         final size = MediaQuery.of(context).size;
         // Responsive dimensions for tablet
-        final heroHeight = (size.height * 0.4).clamp(300.0, 500.0);
-        final paddingHorizontal = (size.width * 0.05).clamp(16.0, 48.0);
-        final paddingVertical = (size.height * 0.03).clamp(16.0, 32.0);
-        final fontSize = (size.width * 0.06).clamp(20.0, 50.0);
-        final cardHeight = (size.height * 0.3).clamp(200.0, 300.0);
+        final heroHeight = (size.height * 0.45).clamp(400.0, 650.0);
+        final paddingHorizontal = (size.width * 0.08).clamp(20.0, 33.0);
+        final paddingVertical = (size.height * 0.05).clamp(24.0, 48.0);
+        final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
+        final cardHeight = (size.height * 0.15).clamp(300.0, 750.0);
         final infoMaxWidth =
             constraints.maxWidth > 1000 ? 800.0 : constraints.maxWidth * 0.9;
         final viewportFraction =
-            constraints.maxWidth > 1000
+            constraints.maxWidth > 1800
+                ? 0.3
+                : constraints.maxWidth > 1400
                 ? 0.35
-                : constraints.maxWidth > 600
-                ? 0.45
-                : 0.65;
+                : constraints.maxWidth > 1000
+                ? 0.4
+                : 0.45;
 
         // Initialize PageController with responsive viewport fraction
         _controller?.dispose();
-        _controller = PageController(viewportFraction: viewportFraction);
+        _controller = PageController(
+          viewportFraction: viewportFraction,
+          initialPage: 0,
+        );
 
         return SingleChildScrollView(
           child: Column(
@@ -114,6 +119,7 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
                         _selectedIndex = index;
                         _isInteracting = false;
                       }),
+                  isDesktop: true, // Match desktop behavior
                 ),
               ),
               SizedBox(height: paddingVertical * 2), // Bottom spacing

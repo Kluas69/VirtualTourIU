@@ -14,6 +14,9 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
   int _hoveredIndex = -1;
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+  bool _isPressed = false;
 
   // List of location names
   static const List<String> locations = [
@@ -39,65 +42,151 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   ];
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = Provider.of<ThemeProvider>(context).isDark;
 
     return Scaffold(
       appBar: AppBar(
         title: BounceInDown(
           duration: const Duration(milliseconds: 800),
-          child: const Text("Virtual Tour"),
+          child: Text(
+            "Virtual Tour",
+            style: GoogleFonts.roboto(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
         ),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
-          // Theme toggle button
-          IconButton(
-            icon: Icon(
-              Provider.of<ThemeProvider>(context).isDark
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
-            ),
-            onPressed:
+          GestureDetector(
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) => setState(() => _isPressed = false),
+            onTapCancel: () => setState(() => _isPressed = false),
+            onTap:
                 () =>
                     Provider.of<ThemeProvider>(
                       context,
                       listen: false,
                     ).toggleTheme(),
-            tooltip: 'Toggle Theme',
+            child: IconButton(
+              icon: Icon(
+                isDark ? Icons.light_mode : Icons.dark_mode,
+                color:
+                    _isPressed
+                        ? theme.primaryColor
+                        : isDark
+                        ? Colors.white
+                        : Colors.black,
+                size: 28,
+              ),
+              onPressed: null, // Handled by GestureDetector
+              tooltip: 'Toggle Theme',
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            ),
           ),
         ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Responsive grid column count
-          final crossAxisCount =
-              constraints.maxWidth > 900
-                  ? 3
-                  : constraints.maxWidth > 600
-                  ? 2
-                  : 1;
+      body: Column(
+        children: [
+          _buildSearchBar(context),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Responsive grid column count
+                final crossAxisCount =
+                    constraints.maxWidth > 900
+                        ? 3
+                        : constraints.maxWidth > 600
+                        ? 2
+                        : 1;
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GridView.builder(
-              itemCount: locations.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 16.0,
-                mainAxisSpacing: 16.0,
-                childAspectRatio: 6.0,
-              ),
-              itemBuilder:
-                  (context, index) => _buildGridItem(context, index, theme),
+                // Filter locations based on search query
+                final filteredLocations =
+                    locations
+                        .asMap()
+                        .entries
+                        .where(
+                          (entry) => entry.value.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ),
+                        )
+                        .toList();
+
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: GridView.builder(
+                    itemCount: filteredLocations.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 16.0,
+                      mainAxisSpacing: 16.0,
+                      childAspectRatio: 6.0,
+                    ),
+                    itemBuilder:
+                        (context, index) => _buildGridItem(
+                          context,
+                          filteredLocations[index].key,
+                          theme,
+                          filteredLocations[index].value,
+                        ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Builds the search bar for filtering locations
+  Widget _buildSearchBar(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: FadeInDown(
+        duration: const Duration(milliseconds: 600),
+        child: TextField(
+          controller: _searchController,
+          onChanged: (value) => setState(() => _searchQuery = value),
+          decoration: InputDecoration(
+            hintText: 'Search locations...',
+            hintStyle: GoogleFonts.roboto(
+              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+            ),
+            prefixIcon: Icon(Icons.search, color: theme.primaryColor),
+            filled: true,
+            fillColor: theme.cardColor.withOpacity(0.8),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          ),
+          style: GoogleFonts.roboto(fontSize: 16),
+        ),
       ),
     );
   }
 
   // Builds individual grid item with hover and tap effects
-  Widget _buildGridItem(BuildContext context, int index, ThemeData theme) {
+  Widget _buildGridItem(
+    BuildContext context,
+    int index,
+    ThemeData theme,
+    String location,
+  ) {
     final isHovered = _hoveredIndex == index;
 
     return FadeInUp(
@@ -148,7 +237,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             ),
             child: Center(
               child: Text(
-                locations[index],
+                location,
                 style: GoogleFonts.roboto(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,

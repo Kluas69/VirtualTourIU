@@ -23,9 +23,9 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     _startShuffleTimer();
   }
 
-  // Starts a timer to shuffle location cards every 5 seconds
+  // Starts a timer to shuffle location cards every 3 seconds to match desktop
   void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!_isInteracting && mounted) {
         setState(() => locationCards.shuffle());
       }
@@ -45,23 +45,28 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
       builder: (context, constraints) {
         final size = MediaQuery.of(context).size;
         // Responsive dimensions for mobile
-        final heroHeight = (size.height * 0.35).clamp(250.0, 400.0);
-        final paddingHorizontal = (size.width * 0.05).clamp(8.0, 32.0);
-        final paddingVertical = (size.height * 0.03).clamp(8.0, 24.0);
-        final fontSize = (size.width * 0.07).clamp(16.0, 40.0);
-        final cardHeight = (size.height * 0.25).clamp(150.0, 250.0);
+        final heroHeight = (size.height * 0.45).clamp(400.0, 650.0);
+        final paddingHorizontal = (size.width * 0.08).clamp(32.0, 100.0);
+        final paddingVertical = (size.height * 0.05).clamp(24.0, 48.0);
+        final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
+        final cardHeight = (size.height * 0.20).clamp(240.0, 1000.0);
         final infoMaxWidth =
             constraints.maxWidth > 600 ? 600.0 : constraints.maxWidth * 0.9;
         final viewportFraction =
-            constraints.maxWidth > 600
-                ? 0.55
-                : constraints.maxWidth > 400
-                ? 0.65
-                : 0.75;
+            constraints.maxWidth > 1800
+                ? 0.3
+                : constraints.maxWidth > 1400
+                ? 0.35
+                : constraints.maxWidth > 1000
+                ? 0.4
+                : 0.45;
 
         // Initialize PageController with responsive viewport fraction
         _controller?.dispose();
-        _controller = PageController(viewportFraction: viewportFraction);
+        _controller = PageController(
+          viewportFraction: viewportFraction,
+          initialPage: 0,
+        );
 
         return SingleChildScrollView(
           child: Column(
@@ -86,7 +91,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                 constraints: BoxConstraints(maxWidth: infoMaxWidth),
                 child: HomeScreen.buildInfoSection(
                   context: context,
-                  isMobile: true,
+                  isMobile: false, // Match desktop behavior
                 ),
               ),
               // Carousel section for location cards
@@ -114,6 +119,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                         _selectedIndex = index;
                         _isInteracting = false;
                       }),
+                  isDesktop: true, // Match desktop behavior
                 ),
               ),
               SizedBox(height: paddingVertical * 2), // Bottom spacing
