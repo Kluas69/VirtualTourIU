@@ -39,6 +39,8 @@ dependencies:
   google_fonts: ^6.2.1
   scroll_snap_list: ^0.9.1
   smooth_page_indicator: ^1.2.1
+  animate_do: ^3.3.4
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:
