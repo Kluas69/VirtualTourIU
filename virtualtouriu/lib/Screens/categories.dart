@@ -165,7 +165,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   crossAxisCount: crossAxisCount,
                                   crossAxisSpacing: 16.0,
                                   mainAxisSpacing: 16.0,
-                                  childAspectRatio: 6,
+                                  childAspectRatio: 4.0,
                                 ),
                             itemBuilder:
                                 (context, index) => _buildGridItem(
