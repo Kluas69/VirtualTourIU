@@ -31,4 +31,19 @@ List<LocationCardData> locationCards = [
     title: "Auditorium",
     imagePath: "lib/images/auditorium.jpg",
   ),
+  const LocationCardData(
+    tag: "NEW",
+    title: "Class Rooms",
+    imagePath: "lib/images/class.jpg",
+  ),
+  const LocationCardData(
+    tag: "Exclusive",
+    title: "Play Area",
+    imagePath: "lib/images/ground.jpg",
+  ),
+  const LocationCardData(
+    tag: "NEW",
+    title: "Auditorium",
+    imagePath: "lib/images/auditorium.jpg",
+  ),
 ];
