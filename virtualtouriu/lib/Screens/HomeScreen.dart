@@ -331,7 +331,7 @@ class HomeScreen extends StatelessWidget {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutBack,
       margin: EdgeInsets.symmetric(
-        horizontal: size.width * 0.02, // Reduced gap between cards
+        horizontal: size.width * 0.02,
         vertical: 20.0,
       ),
       decoration: BoxDecoration(
@@ -367,46 +367,49 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: Transform(
-        transform:
-            Matrix4.identity()
-              ..setEntry(3, 2, 0.001) // Perspective for 3D effect
-              ..rotateY(
-                isSelected
-                    ? 0.05
-                    : isCentered
-                    ? 0.03
-                    : 0.0,
-              )
-              ..rotateX(
-                isSelected
-                    ? -0.05
-                    : isCentered
-                    ? -0.03
-                    : 0.0,
-              ),
-        alignment: Alignment.center,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.0),
-          child: GestureDetector(
-            onTap: () => onTap(index),
-            child: Stack(
-              children: [
-                LocationCard(
-                  data: locationCards[index],
-                  isHovered: isSelected || isCentered,
+      child: Transform.scale(
+        scale: isSelected ? 1.15 : 1.0,
+        child: Transform(
+          transform:
+              Matrix4.identity()
+                ..setEntry(3, 2, 0.001)
+                ..rotateY(
+                  isSelected
+                      ? 0.05
+                      : isCentered
+                      ? 0.03
+                      : 0.1,
+                )
+                ..rotateX(
+                  isSelected
+                      ? -0.05
+                      : isCentered
+                      ? -0.03
+                      : 0.0,
                 ),
-                if (isSelected || isCentered)
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: theme.primaryColor.withOpacity(0.7),
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
+          alignment: Alignment.center,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(25.0),
+            child: GestureDetector(
+              onTap: () => onTap(index),
+              child: Stack(
+                children: [
+                  LocationCard(
+                    data: locationCards[index],
+                    isHovered: isSelected || isCentered,
                   ),
-              ],
+                  if (isSelected || isCentered)
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: theme.primaryColor.withOpacity(0.7),
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),

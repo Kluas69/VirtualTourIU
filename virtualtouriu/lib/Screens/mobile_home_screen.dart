@@ -28,7 +28,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
       if (mounted) {
         setState(() {
           _controller = PageController(
-            viewportFraction: 0.8,
+            viewportFraction: 0.55,
             initialPage: middleIndex,
           );
           _selectedIndex = middleIndex;
@@ -64,7 +64,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
         final paddingHorizontal = (size.width * 0.08).clamp(16.0, 24.0);
         final paddingVertical = (size.height * 0.05).clamp(16.0, 24.0);
         final fontSize = (size.width * 0.05).clamp(20.0, 28.0);
-        final cardHeight = (size.height * 0.40).clamp(200.0, 300.0);
+        final cardHeight = (size.height * 0.38).clamp(100.0, 250.0);
         final infoMaxWidth = constraints.maxWidth * 0.9;
 
         return Stack(
@@ -103,7 +103,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                           child: HomeScreen.buildHeroSection(
                             context: context,
                             fontSize: fontSize,
-                            heightFactor: 1.0,
+                            heightFactor: 0.6,
                           ),
                         ),
                       ),
