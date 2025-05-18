@@ -50,9 +50,9 @@ class HomeScreen extends StatelessWidget {
       // Floating action button to navigate to CategoriesScreen
       floatingActionButton: FloatingActionButton(
         onPressed: () => HomeScreen._navigateToCategories(context),
-        child: const Icon(Icons.explore),
         tooltip: 'Start Tour',
         backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.explore),
       ),
     );
   }

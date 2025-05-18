@@ -4,7 +4,6 @@ import 'package:virtualtouriu/Screens/HomeScreen.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
 
 void main() {
-  debugPrint('Starting app...');
   runApp(const MyApp());
 }
 
