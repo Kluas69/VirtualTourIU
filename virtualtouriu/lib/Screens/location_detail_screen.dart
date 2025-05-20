@@ -3,11 +3,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
+import 'package:virtualtouriu/core/widgets/custom_button.dart';
 
 class LocationDetailScreen extends StatefulWidget {
   final String locationName;
+  final String imagePath;
 
-  const LocationDetailScreen({super.key, required this.locationName});
+  const LocationDetailScreen({
+    super.key,
+    required this.locationName,
+    required this.imagePath,
+  });
 
   @override
   State<LocationDetailScreen> createState() => _LocationDetailScreenState();
@@ -15,8 +21,6 @@ class LocationDetailScreen extends StatefulWidget {
 
 class _LocationDetailScreenState extends State<LocationDetailScreen>
     with SingleTickerProviderStateMixin {
-  bool _isButtonHovered = false;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -108,7 +112,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                 height: imageHeight,
                                 width: double.infinity,
                                 child: Image.asset(
-                                  'lib/images/auditorium.jpg', // Placeholder image
+                                  widget.imagePath,
                                   fit: BoxFit.cover,
                                   errorBuilder:
                                       (context, error, stackTrace) => Container(
@@ -242,122 +246,22 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                               const SizedBox(height: 24),
                                               // Start Tour Button
                                               Center(
-                                                child: MouseRegion(
-                                                  onEnter:
-                                                      (_) => setState(
-                                                        () =>
-                                                            _isButtonHovered =
-                                                                true,
-                                                      ),
-                                                  onExit:
-                                                      (_) => setState(
-                                                        () =>
-                                                            _isButtonHovered =
-                                                                false,
-                                                      ),
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      ScaffoldMessenger.of(
-                                                        context,
-                                                      ).showSnackBar(
-                                                        SnackBar(
-                                                          content: Text(
-                                                            'Starting virtual tour for ${widget.locationName}',
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                    child: AnimatedScale(
-                                                      scale:
-                                                          _isButtonHovered
-                                                              ? 1.1
-                                                              : 1.0,
-                                                      duration: const Duration(
-                                                        milliseconds: 200,
-                                                      ),
-                                                      child: Container(
-                                                        width: buttonWidth,
-                                                        padding:
-                                                            EdgeInsets.symmetric(
-                                                              horizontal: 30,
-                                                              vertical: 16,
-                                                            ),
-                                                        decoration: BoxDecoration(
-                                                          gradient: LinearGradient(
-                                                            colors:
-                                                                _isButtonHovered
-                                                                    ? [
-                                                                      theme
-                                                                          .primaryColor,
-                                                                      theme
-                                                                          .primaryColor
-                                                                          .withOpacity(
-                                                                            0.8,
-                                                                          ),
-                                                                    ]
-                                                                    : [
-                                                                      theme
-                                                                          .primaryColor
-                                                                          .withOpacity(
-                                                                            0.9,
-                                                                          ),
-                                                                      theme
-                                                                          .primaryColor
-                                                                          .withOpacity(
-                                                                            0.7,
-                                                                          ),
-                                                                    ],
-                                                            begin:
-                                                                Alignment
-                                                                    .topLeft,
-                                                            end:
-                                                                Alignment
-                                                                    .bottomRight,
-                                                          ),
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                12,
-                                                              ),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: theme
-                                                                  .primaryColor
-                                                                  .withOpacity(
-                                                                    _isButtonHovered
-                                                                        ? 0.5
-                                                                        : 0.3,
-                                                                  ),
-                                                              blurRadius:
-                                                                  _isButtonHovered
-                                                                      ? 12
-                                                                      : 8,
-                                                              offset:
-                                                                  const Offset(
-                                                                    0,
-                                                                    4,
-                                                                  ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        child: Text(
-                                                          'Start Virtual Tour',
-                                                          style:
-                                                              GoogleFonts.roboto(
-                                                                fontSize:
-                                                                    fontSizeBody,
-                                                                color:
-                                                                    Colors
-                                                                        .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                              ),
-                                                          textAlign:
-                                                              TextAlign.center,
+                                                child: CustomButton(
+                                                  text: 'Start Virtual Tour',
+                                                  onPressed: () {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          'Starting virtual tour for ${widget.locationName}',
                                                         ),
                                                       ),
-                                                    ),
-                                                  ),
+                                                    );
+                                                  },
+                                                  width: buttonWidth,
+                                                  fontSize: fontSizeBody,
+                                                  isMobile: isMobile,
                                                 ),
                                               ),
                                             ],
@@ -429,7 +333,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                     ],
                                   )
                                   : Column(
-                                    // Mobile/Tablet Layout (unchanged)
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
@@ -472,126 +375,22 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                             const SizedBox(height: 16),
                                             // Start Tour Button
                                             Center(
-                                              child: MouseRegion(
-                                                onEnter:
-                                                    (_) => setState(
-                                                      () =>
-                                                          _isButtonHovered =
-                                                              true,
-                                                    ),
-                                                onExit:
-                                                    (_) => setState(
-                                                      () =>
-                                                          _isButtonHovered =
-                                                              false,
-                                                    ),
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          'Starting virtual tour for ${widget.locationName}',
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: AnimatedScale(
-                                                    scale:
-                                                        _isButtonHovered
-                                                            ? 1.1
-                                                            : 1.0,
-                                                    duration: const Duration(
-                                                      milliseconds: 200,
-                                                    ),
-                                                    child: Container(
-                                                      width: buttonWidth,
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                            horizontal:
-                                                                isMobile
-                                                                    ? 20
-                                                                    : 30,
-                                                            vertical:
-                                                                isMobile
-                                                                    ? 12
-                                                                    : 16,
-                                                          ),
-                                                      decoration: BoxDecoration(
-                                                        gradient: LinearGradient(
-                                                          colors:
-                                                              _isButtonHovered
-                                                                  ? [
-                                                                    theme
-                                                                        .primaryColor,
-                                                                    theme
-                                                                        .primaryColor
-                                                                        .withOpacity(
-                                                                          0.8,
-                                                                        ),
-                                                                  ]
-                                                                  : [
-                                                                    theme
-                                                                        .primaryColor
-                                                                        .withOpacity(
-                                                                          0.9,
-                                                                        ),
-                                                                    theme
-                                                                        .primaryColor
-                                                                        .withOpacity(
-                                                                          0.7,
-                                                                        ),
-                                                                  ],
-                                                          begin:
-                                                              Alignment.topLeft,
-                                                          end:
-                                                              Alignment
-                                                                  .bottomRight,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              12,
-                                                            ),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: theme
-                                                                .primaryColor
-                                                                .withOpacity(
-                                                                  _isButtonHovered
-                                                                      ? 0.5
-                                                                      : 0.3,
-                                                                ),
-                                                            blurRadius:
-                                                                _isButtonHovered
-                                                                    ? 12
-                                                                    : 8,
-                                                            offset:
-                                                                const Offset(
-                                                                  0,
-                                                                  4,
-                                                                ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: Text(
-                                                        'Start Virtual Tour',
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                              fontSize:
-                                                                  fontSizeBody,
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
-                                                        textAlign:
-                                                            TextAlign.center,
+                                              child: CustomButton(
+                                                text: 'Start Virtual Tour',
+                                                onPressed: () {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Starting virtual tour for ${widget.locationName}',
                                                       ),
                                                     ),
-                                                  ),
-                                                ),
+                                                  );
+                                                },
+                                                width: buttonWidth,
+                                                fontSize: fontSizeBody,
+                                                isMobile: isMobile,
                                               ),
                                             ),
                                           ],
@@ -666,7 +465,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                   ),
                 ),
               ),
-              // Theme Toggle Button (unchanged, matches DesktopHomeScreen)
+              // Theme Toggle Button
               SafeArea(
                 child: Align(
                   alignment: Alignment.topRight,

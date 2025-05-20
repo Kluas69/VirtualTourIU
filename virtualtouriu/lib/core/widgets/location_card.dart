@@ -83,11 +83,11 @@ class LocationCard extends StatelessWidget {
                 border: Border.all(
                   color:
                       isHovered
-                          ? Theme.of(context).primaryColor.withOpacity(0.8)
+                          ? Theme.of(context).primaryColor.withOpacity(0.2)
                           : Colors.transparent,
                   width: 3,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(25),
                 color:
                     isHovered
                         ? Theme.of(context).primaryColor.withOpacity(0.1)

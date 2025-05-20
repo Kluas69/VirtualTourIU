@@ -149,12 +149,12 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
                             controller: _controller!,
                             selectedIndex: _selectedIndex,
                             isInteracting: _isInteracting,
-                            onTap:
-                                (index) => setState(() {
-                                  _selectedIndex =
-                                      _selectedIndex == index ? -1 : index;
-                                  _isInteracting = false;
-                                }),
+                            onTap: (index) {
+                              setState(() {
+                                _selectedIndex = index;
+                                _isInteracting = false;
+                              });
+                            },
                             setInteracting:
                                 (value) =>
                                     setState(() => _isInteracting = value),

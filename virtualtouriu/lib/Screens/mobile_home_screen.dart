@@ -40,8 +40,13 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
 
   void _startShuffleTimer() {
     _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      if (!_isInteracting && mounted) {
-        setState(() => locationCards.shuffle());
+      if (!_isInteracting && mounted && _controller != null) {
+        final nextIndex = (_selectedIndex + 1) % locationCards.length;
+        _controller!.animateToPage(
+          nextIndex,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
       }
     });
   }
@@ -84,12 +89,9 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
               ),
             ),
             _controller == null
-                ? FadeIn(
-                  duration: const Duration(milliseconds: 300),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor,
-                    ),
+                ? Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).primaryColor,
                   ),
                 )
                 : SingleChildScrollView(
@@ -108,8 +110,8 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                         ),
                       ),
                       FadeInUp(
-                        duration: const Duration(milliseconds: 400),
-                        delay: const Duration(milliseconds: 100),
+                        duration: const Duration(milliseconds: 300),
+                        from: 10.0,
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: paddingHorizontal,
@@ -124,8 +126,8 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                         ),
                       ),
                       FadeInUp(
-                        duration: const Duration(milliseconds: 400),
-                        delay: const Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 300),
+                        from: 10.0,
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: paddingHorizontal,
@@ -138,12 +140,12 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                             controller: _controller!,
                             selectedIndex: _selectedIndex,
                             isInteracting: _isInteracting,
-                            onTap:
-                                (index) => setState(() {
-                                  _selectedIndex =
-                                      _selectedIndex == index ? -1 : index;
-                                  _isInteracting = false;
-                                }),
+                            onTap: (index) {
+                              setState(() {
+                                _selectedIndex = index;
+                                _isInteracting = false;
+                              });
+                            },
                             setInteracting:
                                 (value) =>
                                     setState(() => _isInteracting = value),

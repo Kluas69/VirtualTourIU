@@ -54,7 +54,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
 
   double _computeViewportFraction(double width) {
     if (width > 1800) return 0.25;
-    if (width > 1400) return 0.35;
+    if (width > 1400) return 0.40;
     if (width > 1000) return 0.4;
     return 0.45;
   }
@@ -106,7 +106,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
             ),
             _controller == null
                 ? FadeIn(
-                  duration: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 500),
                   child: Center(
                     child: CircularProgressIndicator(
                       color: Theme.of(context).primaryColor,
@@ -142,8 +142,8 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                         ),
                       ),
                       FadeInUp(
-                        duration: const Duration(milliseconds: 400),
-                        delay: const Duration(milliseconds: 100),
+                        duration: const Duration(milliseconds: 100),
+                        delay: const Duration(milliseconds: 50),
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: paddingHorizontal,
@@ -184,12 +184,12 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                             controller: _controller!,
                             selectedIndex: _selectedIndex,
                             isInteracting: _isInteracting,
-                            onTap:
-                                (index) => setState(() {
-                                  _selectedIndex =
-                                      _selectedIndex == index ? -1 : index;
-                                  _isInteracting = false;
-                                }),
+                            onTap: (index) {
+                              setState(() {
+                                _selectedIndex = index;
+                                _isInteracting = false;
+                              });
+                            },
                             setInteracting:
                                 (value) =>
                                     setState(() => _isInteracting = value),

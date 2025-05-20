@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
 import 'package:virtualtouriu/Screens/location_detail_screen.dart';
+import 'package:virtualtouriu/core/constants.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -16,28 +17,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   int _hoveredIndex = -1;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
-
-  static const List<String> locations = [
-    "Amphitheater",
-    "Cafe",
-    "NLE Lab",
-    "Board Room B",
-    "Swimming Pool",
-    "Lobby Building A",
-    "Webinar Room",
-    "Takhleeq",
-    "Board Room C",
-    "Law Moot Room",
-    "CSO",
-    "Lobby C Building",
-    "Auditorium",
-    "VIP Room",
-    "Lobby Building B",
-    "Production Room",
-    "Male Gym",
-    "Library",
-    "Common Room",
-  ];
 
   @override
   void dispose() {
@@ -133,13 +112,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             : 1;
 
                     final filteredLocations =
-                        locations
+                        locationCards
                             .asMap()
                             .entries
                             .where(
-                              (entry) => entry.value.toLowerCase().contains(
-                                _searchQuery.toLowerCase(),
-                              ),
+                              (entry) => entry.value.title
+                                  .toLowerCase()
+                                  .contains(_searchQuery.toLowerCase()),
                             )
                             .toList();
 
@@ -172,7 +151,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   context,
                                   filteredLocations[index].key,
                                   theme,
-                                  filteredLocations[index].value,
+                                  filteredLocations[index].value.title,
+                                  filteredLocations[index].value.imagePath,
                                   index,
                                 ),
                           ),
@@ -223,6 +203,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     int index,
     ThemeData theme,
     String location,
+    String imagePath,
     int animationIndex,
   ) {
     final isHovered = _hoveredIndex == index;
@@ -239,7 +220,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               context,
               MaterialPageRoute(
                 builder:
-                    (context) => LocationDetailScreen(locationName: location),
+                    (context) => LocationDetailScreen(
+                      locationName: location,
+                      imagePath: imagePath,
+                    ),
               ),
             );
           },

@@ -26,12 +26,10 @@ final ThemeData _lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     primary: Color(0xFF3F51B5), // Indigo
     secondary: Color(0xFF26A69A), // Teal accent
-    surface: Color(0xFFFFFFFF), // White cards
-    background: Color(0xFFF5F7FA),
+    surface: Color(0xFFFFFFFF),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: Color(0xFF212121), // Dark text
-    onBackground: Color(0xFF212121),
+    onSurface: Color(0xFF212121),
   ),
   cardColor: Colors.white,
   textTheme: TextTheme(
@@ -86,12 +84,10 @@ final ThemeData _darkTheme = ThemeData(
   colorScheme: const ColorScheme.dark(
     primary: Color(0xFF5C6BC0), // Lighter indigo
     secondary: Color(0xFF4DB6AC), // Teal accent
-    surface: Color(0xFF1E1E1E), // Dark cards
-    background: Color(0xFF121212),
+    surface: Color(0xFF1E1E1E),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: Color(0xFFE0E0E0), // Light text
-    onBackground: Color(0xFFE0E0E0),
+    onSurface: Color(0xFFE0E0E0),
   ),
   cardColor: const Color(0xFF1E1E1E),
   textTheme: TextTheme(

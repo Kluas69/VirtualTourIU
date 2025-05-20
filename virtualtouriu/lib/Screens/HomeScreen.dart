@@ -11,6 +11,7 @@ import 'package:virtualtouriu/core/constants.dart';
 import 'package:virtualtouriu/core/widgets/location_card.dart';
 import 'package:virtualtouriu/responsive/Responsive_Layout.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
+import 'package:virtualtouriu/Screens/location_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -274,22 +275,36 @@ class HomeScreen extends StatelessWidget {
     final isSelected = selectedIndex == index;
     final theme = Theme.of(context);
 
-    return SlideInRight(
-      duration: Duration(milliseconds: 1000 + index * 200),
-      from: isDesktop ? 100.0 : 50.0,
+    return FadeIn(
+      duration: const Duration(milliseconds: 300),
       child:
           isDesktop
               ? MouseRegion(
                 onEnter: (_) => setInteracting(true),
                 onExit: (_) => setInteracting(false),
-                child: _buildCardContent(
-                  context: context,
-                  index: index,
-                  isSelected: isSelected,
-                  isCentered: isCentered,
-                  onTap: onTap,
-                  controller: controller,
-                  theme: theme,
+                child: GestureDetector(
+                  onTap: () {
+                    onTap(index);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => LocationDetailScreen(
+                              locationName: locationCards[index].title,
+                              imagePath: locationCards[index].imagePath,
+                            ),
+                      ),
+                    );
+                  },
+                  child: _buildCardContent(
+                    context: context,
+                    index: index,
+                    isSelected: isSelected,
+                    isCentered: isCentered,
+                    onTap: onTap,
+                    controller: controller,
+                    theme: theme,
+                  ),
                 ),
               )
               : GestureDetector(
@@ -301,6 +316,16 @@ class HomeScreen extends StatelessWidget {
                     index,
                     duration: const Duration(milliseconds: 500),
                     curve: Curves.easeInOutBack,
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => LocationDetailScreen(
+                            locationName: locationCards[index].title,
+                            imagePath: locationCards[index].imagePath,
+                          ),
+                    ),
                   );
                 },
                 child: _buildCardContent(
@@ -390,26 +415,23 @@ class HomeScreen extends StatelessWidget {
           alignment: Alignment.center,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(25.0),
-            child: GestureDetector(
-              onTap: () => onTap(index),
-              child: Stack(
-                children: [
-                  LocationCard(
-                    data: locationCards[index],
-                    isHovered: isSelected || isCentered,
-                  ),
-                  if (isSelected || isCentered)
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: theme.primaryColor.withOpacity(0.7),
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(20.0),
+            child: Stack(
+              children: [
+                LocationCard(
+                  data: locationCards[index],
+                  isHovered: isSelected || isCentered,
+                ),
+                if (isSelected || isCentered)
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: theme.primaryColor.withOpacity(0.7),
+                        width: 2.0,
                       ),
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         ),
