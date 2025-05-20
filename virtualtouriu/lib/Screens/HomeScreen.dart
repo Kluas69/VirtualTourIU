@@ -244,15 +244,17 @@ class HomeScreen extends StatelessWidget {
               child: SmoothPageIndicator(
                 controller: controller,
                 count: locationCards.length,
-                effect: WormEffect(
+
+                effect: ScrollingDotsEffect(
                   activeDotColor: theme.primaryColor,
-                  dotColor:
-                      theme.textTheme.bodyMedium?.color?.withOpacity(0.4) ??
-                      Colors.grey,
+                  dotColor: Theme.of(context).colorScheme.onSurface,
+
+                  // theme.textTheme.bodyMedium?.color?.withOpacity(0.4) ??
+                  // Colors.grey,
                   dotHeight: isDesktop ? 12.0 : 10.0,
                   dotWidth: isDesktop ? 12.0 : 10.0,
                   spacing: isDesktop ? 14.0 : 12.0,
-                  type: WormType.thin,
+                  maxVisibleDots: 5,
                 ),
               ),
             ),

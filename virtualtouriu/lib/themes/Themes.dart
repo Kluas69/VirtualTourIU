@@ -23,13 +23,13 @@ final ThemeData _lightTheme = ThemeData(
   ), // Soft off-white for clean look
   secondaryHeaderColor: Colors.transparent,
   primaryColor: const Color(0xFF3F51B5), // Deep indigo for primary elements
-  colorScheme: const ColorScheme.light(
+  colorScheme: ColorScheme.light(
     primary: Color(0xFF3F51B5), // Indigo
     secondary: Color(0xFF26A69A), // Teal accent
     surface: Color(0xFFFFFFFF),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: Color(0xFF212121),
+    onSurface: Colors.grey.shade400,
   ),
   cardColor: Colors.white,
   textTheme: TextTheme(
@@ -81,13 +81,13 @@ final ThemeData _darkTheme = ThemeData(
   scaffoldBackgroundColor: const Color(0xFF121212), // Dark grey for depth
   secondaryHeaderColor: Colors.transparent,
   primaryColor: const Color(0xFF5C6BC0), // Lighter indigo for dark mode
-  colorScheme: const ColorScheme.dark(
+  colorScheme: ColorScheme.dark(
     primary: Color(0xFF5C6BC0), // Lighter indigo
-    secondary: Color(0xFF4DB6AC), // Teal accent
+    secondary: Color.fromARGB(255, 255, 255, 255), // Teal accent
     surface: Color(0xFF1E1E1E),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: Color(0xFFE0E0E0),
+    onSurface: Colors.grey.shade100,
   ),
   cardColor: const Color(0xFF1E1E1E),
   textTheme: TextTheme(
