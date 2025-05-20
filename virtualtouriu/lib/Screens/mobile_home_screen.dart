@@ -39,7 +39,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
   }
 
   void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+    _shuffleTimer = Timer.periodic(const Duration(seconds: 7), (_) {
       if (!_isInteracting && mounted && _controller != null) {
         final nextIndex = (_selectedIndex + 1) % locationCards.length;
         _controller!.animateToPage(

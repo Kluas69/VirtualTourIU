@@ -49,7 +49,7 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
   }
 
   void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+    _shuffleTimer = Timer.periodic(const Duration(seconds: 7), (_) {
       if (!_isInteracting && mounted) {
         setState(() => locationCards.shuffle());
       }

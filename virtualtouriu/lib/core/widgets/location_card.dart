@@ -78,7 +78,7 @@ class LocationCard extends StatelessWidget {
           ),
           Positioned.fill(
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 border: Border.all(
                   color:

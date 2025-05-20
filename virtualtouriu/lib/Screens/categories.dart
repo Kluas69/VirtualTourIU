@@ -73,7 +73,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 ? 5
                                 : constraints.maxWidth > 600
                                 ? 4
-                                : 2;
+                                : 3;
                         final spacing = (constraints.maxWidth * 0.02).clamp(
                           8.0,
                           16.0,

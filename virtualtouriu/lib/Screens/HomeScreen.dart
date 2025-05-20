@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'IQRA UNIVERSITY ISLAMABAD',
+                  'IQRA UNIVERSITY',
                   style: GoogleFonts.roboto(
                     color: Colors.white,
                     fontSize: fontSize.clamp(26.0, 50.0),
@@ -111,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Shaping Futures Since 1998',
+                  'ISLAMABAD CAMPUS',
                   style: GoogleFonts.roboto(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: fontSize.clamp(16.0, 28.0),
@@ -133,7 +133,7 @@ class HomeScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return FadeInUp(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 500),
       child: Padding(
         padding: EdgeInsets.all(size.width * 0.06),
         child: Column(

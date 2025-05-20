@@ -170,7 +170,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                               left: paddingHorizontal,
                               right: paddingHorizontal,
                               child: FadeInUp(
-                                duration: const Duration(milliseconds: 400),
+                                duration: const Duration(milliseconds: 700),
                                 child: Text(
                                   widget.locationName,
                                   style: GoogleFonts.roboto(
@@ -209,7 +209,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                         flex: 3,
                                         child: FadeInUp(
                                           duration: const Duration(
-                                            milliseconds: 400,
+                                            milliseconds: 700,
                                           ),
                                           child: Column(
                                             crossAxisAlignment:
@@ -274,7 +274,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                         flex: 2,
                                         child: FadeInUp(
                                           duration: const Duration(
-                                            milliseconds: 400,
+                                            milliseconds: 700,
                                           ),
                                           child: Column(
                                             crossAxisAlignment:
@@ -338,7 +338,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                     children: [
                                       FadeInUp(
                                         duration: const Duration(
-                                          milliseconds: 400,
+                                          milliseconds: 700,
                                         ),
                                         child: Column(
                                           crossAxisAlignment:
@@ -399,7 +399,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                       const SizedBox(height: 16),
                                       FadeInUp(
                                         duration: const Duration(
-                                          milliseconds: 400,
+                                          milliseconds: 700,
                                         ),
                                         child: Column(
                                           crossAxisAlignment:

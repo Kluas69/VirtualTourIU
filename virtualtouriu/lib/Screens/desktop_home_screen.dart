@@ -60,7 +60,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
   }
 
   void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+    _shuffleTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       if (!_isInteracting && mounted) {
         setState(() => locationCards.shuffle());
       }
