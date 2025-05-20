@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:virtualtouriu/Screens/categories.dart';
 import 'package:virtualtouriu/Screens/desktop_home_screen.dart';
 import 'package:virtualtouriu/Screens/mobile_home_screen.dart';
@@ -106,17 +107,52 @@ class HomeScreen extends StatelessWidget {
                   'IQRA UNIVERSITY',
                   style: GoogleFonts.roboto(
                     color: Colors.white,
-                    fontSize: fontSize.clamp(26.0, 50.0),
+                    fontSize: fontSize.clamp(25.0, 45.0),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'ISLAMABAD CAMPUS',
-                  style: GoogleFonts.roboto(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: fontSize.clamp(16.0, 28.0),
-                    fontWeight: FontWeight.w400,
-                  ),
+                AnimatedTextKit(
+                  animatedTexts: [
+                    TyperAnimatedText(
+                      'ISLAMABAD CAMPUS',
+                      textStyle: GoogleFonts.roboto(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: fontSize.clamp(8.0, 16.0),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      speed: const Duration(milliseconds: 100),
+                    ),
+                    TyperAnimatedText(
+                      'INSPIRE FUTURES',
+                      textStyle: GoogleFonts.roboto(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: fontSize.clamp(8.0, 16.0),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      speed: const Duration(milliseconds: 100),
+                    ),
+                    TyperAnimatedText(
+                      'TOP RANKED',
+                      textStyle: GoogleFonts.roboto(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: fontSize.clamp(8.0, 16.0),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      speed: const Duration(milliseconds: 100),
+                    ),
+                    TyperAnimatedText(
+                      'KNOWLEDGE FIRST',
+                      textStyle: GoogleFonts.roboto(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: fontSize.clamp(8.0, 16.0),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      speed: const Duration(milliseconds: 300),
+                    ),
+                  ],
+                  pause: const Duration(seconds: 3),
+                  isRepeatingAnimation: true,
+                  repeatForever: true,
                 ),
               ],
             ),
@@ -193,6 +229,15 @@ class HomeScreen extends StatelessWidget {
   }) {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
+    final isDark = Provider.of<ThemeProvider>(context).isDark;
+    final isMobile = size.width < 600; // Mobile: <600px
+
+    // Calculate responsive button size and padding for tablet/desktop
+    final buttonSize = isDesktop ? 48.0 : (size.width * 0.12).clamp(36.0, 44.0);
+    final buttonPadding =
+        isDesktop ? 16.0 : (size.width * 0.03).clamp(8.0, 12.0);
+    final canScrollLeft = selectedIndex > 0;
+    final canScrollRight = selectedIndex < locationCards.length - 1;
 
     return SafeArea(
       child: Column(
@@ -211,31 +256,87 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                     )
-                    : Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal:
-                            isDesktop ? size.width * 0.06 : size.width * 0.05,
-                        vertical: 20.0,
-                      ),
-                      child: PageView.builder(
-                        clipBehavior: Clip.hardEdge,
-                        controller: controller,
-                        pageSnapping: true,
-                        physics: const ClampingScrollPhysics(),
-                        itemCount: locationCards.length,
-                        onPageChanged: onPageChanged,
-                        itemBuilder:
-                            (context, index) => _buildCarouselCard(
-                              context: context,
-                              index: index,
-                              selectedIndex: selectedIndex,
-                              isInteracting: isInteracting,
-                              onTap: onTap,
-                              setInteracting: setInteracting,
-                              controller: controller,
-                              isDesktop: isDesktop,
+                    : Stack(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal:
+                                isDesktop
+                                    ? size.width * 0.06
+                                    : size.width * 0.05,
+                            vertical: 20.0,
+                          ),
+                          child: PageView.builder(
+                            clipBehavior: Clip.hardEdge,
+                            controller: controller,
+                            pageSnapping: true,
+                            physics: const ClampingScrollPhysics(),
+                            itemCount: locationCards.length,
+                            onPageChanged: onPageChanged,
+                            itemBuilder:
+                                (context, index) => _buildCarouselCard(
+                                  context: context,
+                                  index: index,
+                                  selectedIndex: selectedIndex,
+                                  isInteracting: isInteracting,
+                                  onTap: onTap,
+                                  setInteracting: setInteracting,
+                                  controller: controller,
+                                  isDesktop: isDesktop,
+                                ),
+                          ),
+                        ),
+                        // Left Arrow Button (Tablet/Desktop only)
+                        if (!isMobile)
+                          Positioned(
+                            left: buttonPadding,
+                            top: cardHeight / 2 - buttonSize / 2,
+                            child: FadeInLeft(
+                              duration: const Duration(milliseconds: 300),
+                              child: _NavButton(
+                                icon: Icons.arrow_back,
+                                isEnabled: canScrollLeft,
+                                buttonSize: buttonSize,
+                                onPressed: () {
+                                  if (canScrollLeft) {
+                                    setInteracting(true);
+                                    controller.previousPage(
+                                      duration: const Duration(
+                                        milliseconds: 500,
+                                      ),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  }
+                                },
+                              ),
                             ),
-                      ),
+                          ),
+                        // Right Arrow Button (Tablet/Desktop only)
+                        if (!isMobile)
+                          Positioned(
+                            right: buttonPadding,
+                            top: cardHeight / 2 - buttonSize / 2,
+                            child: FadeInRight(
+                              duration: const Duration(milliseconds: 300),
+                              child: _NavButton(
+                                icon: Icons.arrow_forward,
+                                isEnabled: canScrollRight,
+                                buttonSize: buttonSize,
+                                onPressed: () {
+                                  if (canScrollRight) {
+                                    setInteracting(true);
+                                    controller.nextPage(
+                                      duration: const Duration(
+                                        milliseconds: 500,
+                                      ),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
           ),
           if (locationCards.isNotEmpty)
@@ -244,13 +345,9 @@ class HomeScreen extends StatelessWidget {
               child: SmoothPageIndicator(
                 controller: controller,
                 count: locationCards.length,
-
                 effect: ScrollingDotsEffect(
                   activeDotColor: theme.primaryColor,
                   dotColor: Theme.of(context).colorScheme.onSurface,
-
-                  // theme.textTheme.bodyMedium?.color?.withOpacity(0.4) ??
-                  // Colors.grey,
                   dotHeight: isDesktop ? 12.0 : 10.0,
                   dotWidth: isDesktop ? 12.0 : 10.0,
                   spacing: isDesktop ? 14.0 : 12.0,
@@ -458,6 +555,118 @@ class HomeScreen extends StatelessWidget {
           color: Colors.white,
           fontWeight: FontWeight.w600,
           fontSize: 16.0,
+        ),
+      ),
+    );
+  }
+}
+
+class _NavButton extends StatefulWidget {
+  final IconData icon;
+  final bool isEnabled;
+  final double buttonSize;
+  final VoidCallback onPressed;
+
+  const _NavButton({
+    required this.icon,
+    required this.isEnabled,
+    required this.buttonSize,
+    required this.onPressed,
+  });
+
+  @override
+  _NavButtonState createState() => _NavButtonState();
+}
+
+class _NavButtonState extends State<_NavButton>
+    with SingleTickerProviderStateMixin {
+  bool _isHovered = false;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.primaryColor;
+
+    return MouseRegion(
+      onEnter:
+          widget.isEnabled ? (_) => setState(() => _isHovered = true) : null,
+      onExit:
+          widget.isEnabled ? (_) => setState(() => _isHovered = false) : null,
+      child: GestureDetector(
+        onTap: widget.isEnabled ? widget.onPressed : null,
+        child: AnimatedBuilder(
+          animation: _pulseAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale:
+                  widget.isEnabled
+                      ? (_isHovered ? 1.15 : _pulseAnimation.value)
+                      : 1.0,
+              child: Container(
+                width: widget.buttonSize,
+                height: widget.buttonSize,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors:
+                        widget.isEnabled
+                            ? _isHovered
+                                ? [primaryColor, primaryColor.withOpacity(0.8)]
+                                : [
+                                  primaryColor.withOpacity(0.9),
+                                  primaryColor.withOpacity(0.6),
+                                ]
+                            : [
+                              Colors.grey.withOpacity(0.5),
+                              Colors.grey.withOpacity(0.5),
+                            ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          widget.isEnabled
+                              ? _isHovered
+                                  ? primaryColor.withOpacity(0.6)
+                                  : primaryColor.withOpacity(0.4)
+                              : Colors.black.withOpacity(0.2),
+                      blurRadius: _isHovered ? 14 : 10,
+                      offset: Offset(0, _isHovered ? 10 : 6),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  widget.icon,
+                  color:
+                      widget.isEnabled
+                          ? theme.colorScheme.onPrimary
+                          : Colors.grey,
+                  size: widget.buttonSize * 0.5,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

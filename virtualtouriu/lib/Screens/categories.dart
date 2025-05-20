@@ -14,14 +14,33 @@ class CategoriesScreen extends StatefulWidget {
   State<CategoriesScreen> createState() => _CategoriesScreenState();
 }
 
-class _CategoriesScreenState extends State<CategoriesScreen> {
+class _CategoriesScreenState extends State<CategoriesScreen>
+    with SingleTickerProviderStateMixin {
   int _hoveredIndex = -1;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.bounceOut),
+    );
+    Future.delayed(const Duration(milliseconds: 200), () {
+      _animationController.forward();
+    });
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -56,7 +75,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
+                  horizontal: 12.0,
                   vertical: 8.0,
                 ),
                 child: Column(
@@ -64,7 +83,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   children: [
                     _buildHeader(context, isDark),
                     const SizedBox(height: 8),
-                    _buildSearchBar(context),
+                    _buildAnimatedSearchBar(context),
                     const SizedBox(height: 12),
                     LayoutBuilder(
                       builder: (context, constraints) {
@@ -74,9 +93,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 : constraints.maxWidth > 600
                                 ? 4
                                 : 3;
-                        final spacing = (constraints.maxWidth * 0.02).clamp(
-                          8.0,
-                          16.0,
+                        final spacing = (constraints.maxWidth * 0.00001).clamp(
+                          2.0,
+                          2.0,
                         );
                         final heightScale = constraints.maxWidth / 1200;
 
@@ -187,29 +206,35 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
+  Widget _buildAnimatedSearchBar(BuildContext context) {
     final theme = Theme.of(context);
-    return FadeInDown(
-      duration: const Duration(milliseconds: 400),
-      delay: const Duration(milliseconds: 100),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (value) => setState(() => _searchQuery = value),
-        decoration: InputDecoration(
-          hintText: 'Search locations...',
-          hintStyle: GoogleFonts.roboto(
-            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+    return FadeIn(
+      duration: const Duration(milliseconds: 600),
+      delay: const Duration(milliseconds: 200),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: TextField(
+            controller: _searchController,
+            onChanged: (value) => setState(() => _searchQuery = value),
+            decoration: InputDecoration(
+              hintText: 'Search locations...',
+              hintStyle: GoogleFonts.roboto(
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+              ),
+              prefixIcon: Icon(Icons.search, color: theme.primaryColor),
+              filled: true,
+              fillColor: theme.cardColor.withOpacity(0.8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            ),
+            style: GoogleFonts.roboto(fontSize: 16),
           ),
-          prefixIcon: Icon(Icons.search, color: theme.primaryColor),
-          filled: true,
-          fillColor: theme.cardColor.withOpacity(0.8),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
         ),
-        style: GoogleFonts.roboto(fontSize: 16),
       ),
     );
   }
@@ -254,7 +279,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             );
           },
           child: AnimatedScale(
-            scale: isHovered ? 1.08 : 1.0,
+            scale: isHovered ? 1.0008 : 1.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
             child: Container(
@@ -265,23 +290,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   BoxShadow(
                     color:
                         isHovered
-                            ? theme.primaryColor.withOpacity(0.5)
+                            ? theme.primaryColor.withOpacity(0.2)
                             : Colors.black.withOpacity(0.15),
-                    blurRadius: isHovered ? 10.0 : 6.0,
-                    spreadRadius: isHovered ? 2.0 : 0.0,
-                    offset: Offset(0, isHovered ? 6.0 : 4.0),
+                    blurRadius: isHovered ? 3.0 : 6.0,
+                    spreadRadius: isHovered ? 1.5 : 0.0,
+                    offset: Offset(0, isHovered ? 2.0 : 1.0),
                   ),
                 ],
                 border: Border.all(
                   color:
                       isHovered
-                          ? theme.primaryColor.withOpacity(0.9)
+                          ? theme.primaryColor.withOpacity(0.2)
                           : Colors.transparent,
                   width: 2.0,
                 ),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(5),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
