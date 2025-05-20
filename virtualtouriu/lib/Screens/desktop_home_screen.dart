@@ -86,7 +86,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
         final paddingHorizontal = (size.width * 0.07).clamp(3.0, 6.0);
         final paddingVertical = (size.height * 0.55).clamp(3.0, 6.0);
         final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
-        final cardHeight = (size.height * 0.35).clamp(325.0, 1200.0);
+        final cardHeight = (size.height * 0.38).clamp(325.0, 1200.0);
 
         return Stack(
           children: [

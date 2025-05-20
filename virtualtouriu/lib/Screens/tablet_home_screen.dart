@@ -74,7 +74,7 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
         final paddingHorizontal = (size.width * 0.08).clamp(3.0, 6.0);
         final paddingVertical = (size.height * 0.05).clamp(3.0, 6.0);
         final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
-        final cardHeight = (size.height * 0.25).clamp(300.0, 750.0);
+        final cardHeight = (size.height * 0.20).clamp(300.0, 1000.0);
         final infoMaxWidth =
             constraints.maxWidth > 1000 ? 800.0 : constraints.maxWidth * 0.9;
 
