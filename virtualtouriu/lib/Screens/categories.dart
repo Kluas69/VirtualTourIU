@@ -163,8 +163,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: 16.0,
-                                  mainAxisSpacing: 16.0,
+                                  crossAxisSpacing: 14.0,
+                                  mainAxisSpacing: 14.0,
                                   childAspectRatio: 4.0,
                                 ),
                             itemBuilder:
