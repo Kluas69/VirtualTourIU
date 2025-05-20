@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:virtualtouriu/Screens/HomeScreen.dart';
@@ -85,6 +86,20 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                         : Colors.grey.shade100,
                     isDark ? Colors.black.withOpacity(0.2) : Colors.white,
                   ],
+                ),
+              ),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: isDark ? 8.0 : 5.0,
+                    sigmaY: isDark ? 8.0 : 5.0,
+                  ),
+                  child: Container(
+                    color:
+                        isDark
+                            ? Colors.black.withOpacity(0.2)
+                            : Colors.white.withOpacity(0.2),
+                  ),
                 ),
               ),
             ),

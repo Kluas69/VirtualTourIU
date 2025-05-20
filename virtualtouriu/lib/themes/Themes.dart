@@ -15,21 +15,18 @@ class ThemeProvider with ChangeNotifier {
 }
 
 final ThemeData _lightTheme = ThemeData(
-  scaffoldBackgroundColor: const Color.fromARGB(
-    255,
-    220,
-    221,
-    222,
-  ), // Soft off-white for clean look
+  scaffoldBackgroundColor: const Color.fromARGB(255, 220, 221, 222),
   secondaryHeaderColor: Colors.transparent,
-  primaryColor: const Color(0xFF3F51B5), // Deep indigo for primary elements
+  primaryColor: const Color(0xFF3F51B5),
   colorScheme: ColorScheme.light(
-    primary: Color(0xFF3F51B5), // Indigo
-    secondary: Color(0xFF26A69A), // Teal accent
-    surface: Color(0xFFFFFFFF),
+    primary: const Color(0xFF3F51B5),
+    secondary: const Color(0xFF26A69A),
+    surface: const Color(0xFFFFFFFF),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Colors.grey.shade400,
+    background: const Color.fromARGB(255, 220, 221, 222),
+    onBackground: const Color(0xFF212121),
   ),
   cardColor: Colors.white,
   textTheme: TextTheme(
@@ -48,46 +45,103 @@ final ThemeData _lightTheme = ThemeData(
       fontWeight: FontWeight.bold,
       fontSize: 24.0,
     ),
+    headlineMedium: GoogleFonts.poppins(
+      color: const Color(0xFF212121),
+      fontWeight: FontWeight.bold,
+      fontSize: 28.0,
+    ),
+    titleLarge: GoogleFonts.poppins(
+      color: const Color(0xFF212121),
+      fontWeight: FontWeight.w700,
+      fontSize: 20.0,
+    ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF3F51B5), // Indigo
+      backgroundColor: const Color(0xFF3F51B5),
       foregroundColor: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 4,
       shadowColor: const Color(0xFF3F51B5).withOpacity(0.3),
+      textStyle: GoogleFonts.poppins(
+        fontSize: 16.0,
+        fontWeight: FontWeight.w600,
+      ),
     ),
   ),
-  appBarTheme: const AppBarTheme(
+  appBarTheme: AppBarTheme(
     backgroundColor: Colors.transparent,
-    foregroundColor: Color(0xFF212121),
+    foregroundColor: const Color(0xFF212121),
     elevation: 0,
-    titleTextStyle: TextStyle(
-      fontFamily: 'Poppins',
+    titleTextStyle: GoogleFonts.poppins(
       fontSize: 24,
       fontWeight: FontWeight.bold,
+      color: const Color(0xFF212121),
     ),
+    iconTheme: const IconThemeData(color: Color(0xFF212121)),
   ),
   cardTheme: CardTheme(
     elevation: 4,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     shadowColor: Colors.black.withOpacity(0.1),
+    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
   ),
-  dividerColor: Colors.grey[300],
+  dividerTheme: DividerThemeData(
+    color: Colors.grey[300],
+    thickness: 1,
+    space: 16,
+  ),
+  iconTheme: const IconThemeData(color: Color(0xFF212121), size: 24),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: const Color(0xFF3F51B5),
+    foregroundColor: Colors.white,
+    elevation: 6,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.white.withOpacity(0.8),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFF3F51B5), width: 2),
+    ),
+    hintStyle: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14),
+    labelStyle: GoogleFonts.poppins(
+      color: const Color(0xFF212121),
+      fontSize: 14,
+    ),
+  ),
+  snackBarTheme: SnackBarThemeData(
+    backgroundColor: const Color(0xFF3F51B5),
+    contentTextStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    behavior: SnackBarBehavior.floating,
+  ),
 );
 
 final ThemeData _darkTheme = ThemeData(
-  scaffoldBackgroundColor: const Color(0xFF121212), // Dark grey for depth
+  scaffoldBackgroundColor: const Color(0xFF121212),
   secondaryHeaderColor: Colors.transparent,
-  primaryColor: const Color(0xFF5C6BC0), // Lighter indigo for dark mode
+  primaryColor: const Color(0xFF5C6BC0),
   colorScheme: ColorScheme.dark(
-    primary: Color(0xFF5C6BC0), // Lighter indigo
-    secondary: Color.fromARGB(255, 255, 255, 255), // Teal accent
-    surface: Color(0xFF1E1E1E),
+    primary: const Color(0xFF5C6BC0),
+    secondary: const Color.fromARGB(255, 255, 255, 255),
+    surface: const Color(0xFF1E1E1E),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Colors.grey.shade100,
+    background: const Color(0xFF121212),
+    onBackground: const Color(0xFFE0E0E0),
   ),
   cardColor: const Color(0xFF1E1E1E),
   textTheme: TextTheme(
@@ -106,31 +160,86 @@ final ThemeData _darkTheme = ThemeData(
       fontWeight: FontWeight.bold,
       fontSize: 24.0,
     ),
+    headlineMedium: GoogleFonts.poppins(
+      color: const Color(0xFFE0E0E0),
+      fontWeight: FontWeight.bold,
+      fontSize: 28.0,
+    ),
+    titleLarge: GoogleFonts.poppins(
+      color: const Color(0xFFE0E0E0),
+      fontWeight: FontWeight.w700,
+      fontSize: 20.0,
+    ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF5C6BC0), // Lighter indigo
+      backgroundColor: const Color(0xFF5C6BC0),
       foregroundColor: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 4,
       shadowColor: const Color(0xFF5C6BC0).withOpacity(0.3),
+      textStyle: GoogleFonts.poppins(
+        fontSize: 16.0,
+        fontWeight: FontWeight.w600,
+      ),
     ),
   ),
-  appBarTheme: const AppBarTheme(
+  appBarTheme: AppBarTheme(
     backgroundColor: Colors.transparent,
-    foregroundColor: Color(0xFFE0E0E0),
+    foregroundColor: const Color(0xFFE0E0E0),
     elevation: 0,
-    titleTextStyle: TextStyle(
-      fontFamily: 'Poppins',
+    titleTextStyle: GoogleFonts.poppins(
       fontSize: 24,
       fontWeight: FontWeight.bold,
+      color: const Color(0xFFE0E0E0),
     ),
+    iconTheme: const IconThemeData(color: Color(0xFFE0E0E0)),
   ),
   cardTheme: CardTheme(
     elevation: 4,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     shadowColor: Colors.black.withOpacity(0.2),
+    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
   ),
-  dividerColor: Colors.grey[800],
+  dividerTheme: DividerThemeData(
+    color: Colors.grey[800],
+    thickness: 1,
+    space: 16,
+  ),
+  iconTheme: const IconThemeData(color: Color(0xFFE0E0E0), size: 24),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: const Color(0xFF5C6BC0),
+    foregroundColor: Colors.white,
+    elevation: 6,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: const Color(0xFF1E1E1E).withOpacity(0.8),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey[800]!, width: 1),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFF5C6BC0), width: 2),
+    ),
+    hintStyle: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
+    labelStyle: GoogleFonts.poppins(
+      color: const Color(0xFFE0E0E0),
+      fontSize: 14,
+    ),
+  ),
+  snackBarTheme: SnackBarThemeData(
+    backgroundColor: const Color(0xFF5C6BC0),
+    contentTextStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    behavior: SnackBarBehavior.floating,
+  ),
 );

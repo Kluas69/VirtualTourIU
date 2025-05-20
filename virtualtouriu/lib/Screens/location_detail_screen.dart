@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // Responsive dimensions
           final isMobile = constraints.maxWidth < 600;
           final isTablet =
               constraints.maxWidth >= 600 && constraints.maxWidth < 900;
@@ -80,7 +80,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
 
           return Stack(
             children: [
-              // Background Gradient for Desktop
               if (isDesktop)
                 Container(
                   decoration: BoxDecoration(
@@ -95,6 +94,20 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                       ],
                     ),
                   ),
+                  child: ClipRRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: isDark ? 8.0 : 5.0,
+                        sigmaY: isDark ? 8.0 : 5.0,
+                      ),
+                      child: Container(
+                        color:
+                            isDark
+                                ? Colors.black.withOpacity(0.2)
+                                : Colors.white.withOpacity(0.2),
+                      ),
+                    ),
+                  ),
                 ),
               SingleChildScrollView(
                 child: Center(
@@ -103,7 +116,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Hero Image Section
                         Stack(
                           children: [
                             FadeInDown(
@@ -192,7 +204,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                             ),
                           ],
                         ),
-                        // Content Section
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: paddingHorizontal,
@@ -204,7 +215,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // Description Column
                                       Expanded(
                                         flex: 3,
                                         child: FadeInUp(
@@ -244,7 +254,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                                 ),
                                               ),
                                               const SizedBox(height: 24),
-                                              // Start Tour Button
                                               Center(
                                                 child: CustomButton(
                                                   text: 'Start Virtual Tour',
@@ -269,7 +278,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                         ),
                                       ),
                                       const SizedBox(width: 32),
-                                      // Key Features Column
                                       Expanded(
                                         flex: 2,
                                         child: FadeInUp(
@@ -373,7 +381,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                               ),
                                             ),
                                             const SizedBox(height: 16),
-                                            // Start Tour Button
                                             Center(
                                               child: CustomButton(
                                                 text: 'Start Virtual Tour',
@@ -465,7 +472,6 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                   ),
                 ),
               ),
-              // Theme Toggle Button
               SafeArea(
                 child: Align(
                   alignment: Alignment.topRight,

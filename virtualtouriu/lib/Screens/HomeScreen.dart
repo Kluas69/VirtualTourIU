@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,32 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  isDark ? Colors.black.withOpacity(0.1) : Colors.grey.shade100,
+                  isDark ? Colors.black.withOpacity(0.2) : Colors.white,
+                ],
+              ),
+            ),
+            child: ClipRRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: isDark ? 8.0 : 5.0,
+                  sigmaY: isDark ? 8.0 : 5.0,
+                ),
+                child: Container(
+                  color:
+                      isDark
+                          ? Colors.black.withOpacity(0.2)
+                          : Colors.white.withOpacity(0.2),
+                ),
+              ),
+            ),
+          ),
           const ResponsiveLayout(
             mobileBody: MobileHomeScreen(),
             tabletBody: TabletHomeScreen(),
@@ -230,9 +257,8 @@ class HomeScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
     final isDark = Provider.of<ThemeProvider>(context).isDark;
-    final isMobile = size.width < 600; // Mobile: <600px
+    final isMobile = size.width < 600;
 
-    // Calculate responsive button size and padding for tablet/desktop
     final buttonSize = isDesktop ? 48.0 : (size.width * 0.12).clamp(36.0, 44.0);
     final buttonPadding =
         isDesktop ? 16.0 : (size.width * 0.03).clamp(8.0, 12.0);
@@ -286,7 +312,6 @@ class HomeScreen extends StatelessWidget {
                                 ),
                           ),
                         ),
-                        // Left Arrow Button (Tablet/Desktop only)
                         if (!isMobile)
                           Positioned(
                             left: buttonPadding,
@@ -311,7 +336,6 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                        // Right Arrow Button (Tablet/Desktop only)
                         if (!isMobile)
                           Positioned(
                             right: buttonPadding,

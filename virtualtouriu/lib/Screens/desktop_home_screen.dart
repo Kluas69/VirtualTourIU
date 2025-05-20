@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:virtualtouriu/Screens/HomeScreen.dart';
@@ -60,7 +61,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
   }
 
   void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+    _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!_isInteracting && mounted) {
         setState(() => locationCards.shuffle());
       }
@@ -86,7 +87,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
         final paddingHorizontal = (size.width * 0.07).clamp(3.0, 6.0);
         final paddingVertical = (size.height * 0.55).clamp(3.0, 6.0);
         final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
-        final cardHeight = (size.height * 0.38).clamp(325.0, 1200.0);
+        final cardHeight = (size.height * 0.35).clamp(325.0, 1200.0);
 
         return Stack(
           children: [
@@ -101,6 +102,20 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                         : Colors.grey.shade100,
                     isDark ? Colors.black.withOpacity(0.2) : Colors.white,
                   ],
+                ),
+              ),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: isDark ? 8.0 : 5.0,
+                    sigmaY: isDark ? 8.0 : 5.0,
+                  ),
+                  child: Container(
+                    color:
+                        isDark
+                            ? Colors.black.withOpacity(0.2)
+                            : Colors.white.withOpacity(0.2),
+                  ),
                 ),
               ),
             ),
