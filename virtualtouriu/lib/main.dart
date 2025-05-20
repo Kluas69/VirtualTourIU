@@ -15,14 +15,10 @@ class MyApp extends StatelessWidget {
     debugPrint('Building MyApp...');
     return ChangeNotifierProvider(
       create: (_) {
-        debugPrint('Creating ThemeProvider...');
         return ThemeProvider();
       },
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
-          debugPrint(
-            'Building MaterialApp with theme: ${themeProvider.isDark}',
-          );
           return MaterialApp(
             title: 'Iqra University Virtual Tour',
             theme: themeProvider.theme,

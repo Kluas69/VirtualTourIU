@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
 import 'package:virtualtouriu/Screens/location_detail_screen.dart';
 import 'package:virtualtouriu/core/constants.dart';
@@ -28,7 +29,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = Provider.of<ThemeProvider>(context).isDark;
-    final isDesktop = MediaQuery.of(context).size.width >= 900;
+    final mediaQuery = MediaQuery.of(context);
+    final isDesktop = mediaQuery.size.width >= 900;
+    final screenWidth = mediaQuery.size.width;
 
     return Scaffold(
       body: Stack(
@@ -36,116 +39,83 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           if (isDesktop)
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.5,
                   colors: [
                     isDark
-                        ? Colors.black.withOpacity(0.1)
-                        : Colors.grey.shade100,
-                    isDark ? Colors.black.withOpacity(0.2) : Colors.white,
+                        ? Colors.black.withOpacity(0.3)
+                        : Colors.grey.shade50,
+                    isDark ? Colors.black.withOpacity(0.5) : Colors.white,
                   ],
                 ),
               ),
             ),
-          Column(
-            children: [
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      FadeInDown(
-                        duration: const Duration(milliseconds: 300),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
-                      FadeInDown(
-                        duration: const Duration(milliseconds: 400),
-                        child: Text(
-                          "Virtual Tour",
-                          style: GoogleFonts.roboto(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ),
-                      FadeInDown(
-                        duration: const Duration(milliseconds: 300),
-                        child: IconButton(
-                          icon: Icon(
-                            isDark ? Icons.light_mode : Icons.dark_mode,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                          onPressed:
-                              () =>
-                                  Provider.of<ThemeProvider>(
-                                    context,
-                                    listen: false,
-                                  ).toggleTheme(),
-                          tooltip: 'Toggle Theme',
-                        ),
-                      ),
-                    ],
-                  ),
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
                 ),
-              ),
-              _buildSearchBar(context),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final crossAxisCount =
-                        constraints.maxWidth > 900
-                            ? 4
-                            : constraints.maxWidth > 600
-                            ? 2
-                            : 1;
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(context, isDark),
+                    const SizedBox(height: 8),
+                    _buildSearchBar(context),
+                    const SizedBox(height: 12),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final crossAxisCount =
+                            constraints.maxWidth > 900
+                                ? 5
+                                : constraints.maxWidth > 600
+                                ? 4
+                                : 2;
+                        final spacing = (constraints.maxWidth * 0.02).clamp(
+                          8.0,
+                          16.0,
+                        );
+                        final heightScale = constraints.maxWidth / 1200;
 
-                    final filteredLocations =
-                        locationCards
-                            .asMap()
-                            .entries
-                            .where(
-                              (entry) => entry.value.title
-                                  .toLowerCase()
-                                  .contains(_searchQuery.toLowerCase()),
-                            )
-                            .toList();
+                        final filteredLocations =
+                            locationCards
+                                .asMap()
+                                .entries
+                                .where(
+                                  (entry) => entry.value.title
+                                      .toLowerCase()
+                                      .contains(_searchQuery.toLowerCase()),
+                                )
+                                .toList();
 
-                    return filteredLocations.isEmpty
-                        ? FadeInUp(
-                          duration: const Duration(milliseconds: 300),
-                          child: Center(
-                            child: Text(
-                              'No locations found',
-                              style: GoogleFonts.roboto(
-                                fontSize: 18,
-                                color: theme.textTheme.bodyMedium?.color,
+                        if (filteredLocations.isEmpty) {
+                          return FadeInUp(
+                            duration: const Duration(milliseconds: 300),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(40.0),
+                                child: Text(
+                                  'No locations found',
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 18,
+                                    color: theme.textTheme.bodyMedium?.color,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                        : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: GridView.builder(
+                          );
+                        }
+
+                        return Padding(
+                          padding: EdgeInsets.all(spacing),
+                          child: MasonryGridView.count(
+                            crossAxisCount: crossAxisCount,
+                            mainAxisSpacing: spacing,
+                            crossAxisSpacing: spacing,
                             itemCount: filteredLocations.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: 14.0,
-                                  mainAxisSpacing: 14.0,
-                                  childAspectRatio: 4.0,
-                                ),
                             itemBuilder:
                                 (context, index) => _buildGridItem(
                                   context,
@@ -154,46 +124,92 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   filteredLocations[index].value.title,
                                   filteredLocations[index].value.imagePath,
                                   index,
+                                  heightScale,
                                 ),
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
                           ),
                         );
-                  },
+                      },
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildHeader(BuildContext context, bool isDark) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        FadeInDown(
+          duration: const Duration(milliseconds: 300),
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        FadeInDown(
+          duration: const Duration(milliseconds: 400),
+          child: Text(
+            "Virtual Tour",
+            style: GoogleFonts.roboto(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+        FadeInDown(
+          duration: const Duration(milliseconds: 300),
+          child: IconButton(
+            icon: Icon(
+              isDark ? Icons.light_mode : Icons.dark_mode,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            onPressed:
+                () =>
+                    Provider.of<ThemeProvider>(
+                      context,
+                      listen: false,
+                    ).toggleTheme(),
+            tooltip: 'Toggle Theme',
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSearchBar(BuildContext context) {
     final theme = Theme.of(context);
-
     return FadeInDown(
       duration: const Duration(milliseconds: 400),
       delay: const Duration(milliseconds: 100),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: TextField(
-          controller: _searchController,
-          onChanged: (value) => setState(() => _searchQuery = value),
-          decoration: InputDecoration(
-            hintText: 'Search locations...',
-            hintStyle: GoogleFonts.roboto(
-              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-            ),
-            prefixIcon: Icon(Icons.search, color: theme.primaryColor),
-            filled: true,
-            fillColor: theme.cardColor.withOpacity(0.8),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (value) => setState(() => _searchQuery = value),
+        decoration: InputDecoration(
+          hintText: 'Search locations...',
+          hintStyle: GoogleFonts.roboto(
+            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
           ),
-          style: GoogleFonts.roboto(fontSize: 16),
+          prefixIcon: Icon(Icons.search, color: theme.primaryColor),
+          filled: true,
+          fillColor: theme.cardColor.withOpacity(0.8),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
         ),
+        style: GoogleFonts.roboto(fontSize: 16),
       ),
     );
   }
@@ -205,12 +221,22 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     String location,
     String imagePath,
     int animationIndex,
+    double heightScale,
   ) {
     final isHovered = _hoveredIndex == index;
+    final size = MediaQuery.of(context).size;
+    final baseHeight =
+        index % 3 == 0
+            ? 300.0
+            : index % 2 == 0
+            ? 250.0
+            : 200.0;
+    final tileHeight = baseHeight * heightScale.clamp(0.7, 1.0);
 
-    return FadeInUp(
-      duration: const Duration(milliseconds: 300),
-      delay: Duration(milliseconds: animationIndex * 30),
+    return ZoomIn(
+      duration: const Duration(milliseconds: 400),
+      delay: Duration(milliseconds: animationIndex * 50),
+      key: ValueKey(index),
       child: MouseRegion(
         onEnter: (_) => setState(() => _hoveredIndex = index),
         onExit: (_) => setState(() => _hoveredIndex = -1),
@@ -228,64 +254,80 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             );
           },
           child: AnimatedScale(
-            scale: isHovered ? 1.001 : 1.0,
+            scale: isHovered ? 1.08 : 1.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
             child: Container(
-              padding: const EdgeInsets.all(16),
+              height: tileHeight,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors:
-                      isHovered
-                          ? [
-                            theme.primaryColor,
-                            theme.primaryColor.withOpacity(0.7),
-                          ]
-                          : [theme.cardColor, theme.cardColor.withOpacity(0.8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
                     color:
                         isHovered
-                            ? theme.primaryColor.withOpacity(0.4)
-                            : Colors.black.withOpacity(0.1),
-                    blurRadius: isHovered ? 7.0 : 6.0,
-                    offset: Offset(0, isHovered ? 5.0 : 4.0),
+                            ? theme.primaryColor.withOpacity(0.5)
+                            : Colors.black.withOpacity(0.15),
+                    blurRadius: isHovered ? 10.0 : 6.0,
+                    spreadRadius: isHovered ? 2.0 : 0.0,
+                    offset: Offset(0, isHovered ? 6.0 : 4.0),
                   ),
                 ],
                 border: Border.all(
                   color:
                       isHovered
-                          ? theme.primaryColor.withOpacity(0.8)
+                          ? theme.primaryColor.withOpacity(0.9)
                           : Colors.transparent,
-                  width: 1.5,
+                  width: 2.0,
                 ),
               ),
-              child: Center(
-                child: Text(
-                  location,
-                  style: GoogleFonts.roboto(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
-                    color:
-                        isHovered
-                            ? Colors.white
-                            : theme.textTheme.bodyMedium?.color,
-                    shadows:
-                        isHovered
-                            ? [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 2.0,
-                                offset: const Offset(2, 2),
-                              ),
-                            ]
-                            : [],
-                  ),
-                  textAlign: TextAlign.center,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      imagePath,
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (context, error, stackTrace) => Container(
+                            color: Colors.grey.shade300,
+                            child: const Center(child: Text('Image Error')),
+                          ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.1),
+                            Colors.black.withOpacity(isHovered ? 0.7 : 0.6),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        location,
+                        style: GoogleFonts.roboto(
+                          fontSize: size.width * 0.015,
+                          fontWeight: FontWeight.w700,
+                          color:
+                              isHovered
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.9),
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.4),
+                              blurRadius: 3.0,
+                              offset: const Offset(2, 2),
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
