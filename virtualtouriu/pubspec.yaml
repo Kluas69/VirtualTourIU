@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_inappwebview: ^5.7.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,6 +44,12 @@ dependencies:
   flutter_staggered_animations: ^1.1.1
   flutter_staggered_grid_view: ^0.7.0
   animated_text_kit: ^4.2.2
+  panorama: ^0.4.1
+  shared_preferences: ^2.2.3
+  webview_flutter: ^4.4.2
+  webview_flutter_web: ^0.2.2+3
+  flutter_html: ^3.0.0-beta.2 # Add this for rendering HTML on web
+  universal_html: ^2.2.4
 
 dev_dependencies:
   flutter_test:
@@ -68,7 +75,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/images/
-  #   - images/a_dot_ham.jpeg
+    - lib/images/panoramas/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

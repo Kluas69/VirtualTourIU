@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
 import 'package:virtualtouriu/core/widgets/custom_button.dart';
+import 'package:virtualtouriu/Screens/PanoramaScreen.dart';
 
 class LocationDetailScreen extends StatefulWidget {
   final String locationName;
@@ -258,13 +259,17 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                                 child: CustomButton(
                                                   text: 'Start Virtual Tour',
                                                   onPressed: () {
-                                                    ScaffoldMessenger.of(
+                                                    Navigator.push(
                                                       context,
-                                                    ).showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          'Starting virtual tour for ${widget.locationName}',
-                                                        ),
+                                                      MaterialPageRoute(
+                                                        builder:
+                                                            (
+                                                              context,
+                                                            ) => PanoramaScreen(
+                                                              locationName:
+                                                                  widget
+                                                                      .locationName,
+                                                            ),
                                                       ),
                                                     );
                                                   },
@@ -385,13 +390,17 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                               child: CustomButton(
                                                 text: 'Start Virtual Tour',
                                                 onPressed: () {
-                                                  ScaffoldMessenger.of(
+                                                  Navigator.push(
                                                     context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                        'Starting virtual tour for ${widget.locationName}',
-                                                      ),
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (
+                                                            context,
+                                                          ) => PanoramaScreen(
+                                                            locationName:
+                                                                widget
+                                                                    .locationName,
+                                                          ),
                                                     ),
                                                   );
                                                 },

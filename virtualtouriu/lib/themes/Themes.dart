@@ -25,8 +25,6 @@ final ThemeData _lightTheme = ThemeData(
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Colors.grey.shade400,
-    background: const Color.fromARGB(255, 220, 221, 222),
-    onBackground: const Color(0xFF212121),
   ),
   cardColor: Colors.white,
   textTheme: TextTheme(
@@ -81,12 +79,7 @@ final ThemeData _lightTheme = ThemeData(
     ),
     iconTheme: const IconThemeData(color: Color(0xFF212121)),
   ),
-  cardTheme: CardTheme(
-    elevation: 4,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    shadowColor: Colors.black.withOpacity(0.1),
-    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-  ),
+
   dividerTheme: DividerThemeData(
     color: Colors.grey[300],
     thickness: 1,
@@ -140,8 +133,6 @@ final ThemeData _darkTheme = ThemeData(
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onSurface: Colors.grey.shade100,
-    background: const Color(0xFF121212),
-    onBackground: const Color(0xFFE0E0E0),
   ),
   cardColor: const Color(0xFF1E1E1E),
   textTheme: TextTheme(
@@ -196,12 +187,7 @@ final ThemeData _darkTheme = ThemeData(
     ),
     iconTheme: const IconThemeData(color: Color(0xFFE0E0E0)),
   ),
-  cardTheme: CardTheme(
-    elevation: 4,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    shadowColor: Colors.black.withOpacity(0.2),
-    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-  ),
+
   dividerTheme: DividerThemeData(
     color: Colors.grey[800],
     thickness: 1,

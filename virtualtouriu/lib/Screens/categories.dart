@@ -259,7 +259,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
     final tileHeight = baseHeight * heightScale.clamp(0.7, 1.0);
 
     return ZoomIn(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 50),
       delay: Duration(milliseconds: animationIndex * 50),
       key: ValueKey(index),
       child: MouseRegion(
@@ -279,7 +279,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
             );
           },
           child: AnimatedScale(
-            scale: isHovered ? 1.0008 : 1.0,
+            scale: isHovered ? 1.001 : 1.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
             child: Container(
