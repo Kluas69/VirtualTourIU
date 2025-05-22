@@ -16,31 +16,26 @@ class TabletHomeScreen extends StatefulWidget {
 
 class _TabletHomeScreenState extends State<TabletHomeScreen> {
   PageController? _controller;
-  int _selectedIndex = -1;
+  int _selectedIndex = 0;
   Timer? _shuffleTimer;
   bool _isInteracting = false;
-  late List<LocationCardData> _displayedCards; // Mutable copy of locationCards
+  late List<LocationCardData> _displayedCards;
 
   @override
   void initState() {
     super.initState();
-    _displayedCards = List.from(locationCards); // Create a mutable copy
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final viewportFraction = _computeViewportFraction(
-        MediaQuery.of(context).size.width,
-      );
-      final middleIndex =
-          _displayedCards.isNotEmpty ? _displayedCards.length ~/ 2 : 0;
-      if (mounted) {
-        setState(() {
-          _controller = PageController(
-            viewportFraction: viewportFraction,
-            initialPage: middleIndex,
-          );
-          _selectedIndex = middleIndex;
-        });
-      }
-    });
+    _displayedCards = List.from(AppConstants.locationCards);
+    final viewportFraction = _computeViewportFraction(
+      WidgetsBinding.instance.window.physicalSize.width /
+          WidgetsBinding.instance.window.devicePixelRatio,
+    );
+    final middleIndex =
+        _displayedCards.isNotEmpty ? _displayedCards.length ~/ 2 : 0;
+    _controller = PageController(
+      viewportFraction: viewportFraction,
+      initialPage: middleIndex,
+    );
+    _selectedIndex = middleIndex;
     _startShuffleTimer();
   }
 
@@ -55,7 +50,7 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
     _shuffleTimer = Timer.periodic(const Duration(seconds: 7), (_) {
       if (!_isInteracting && mounted) {
         setState(() {
-          _displayedCards.shuffle(); // Shuffle the mutable copy
+          _displayedCards.shuffle();
         });
       }
     });
@@ -72,57 +67,67 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDark;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = MediaQuery.of(context).size;
-        final heroHeight = (size.height * 0.45).clamp(400.0, 650.0);
-        final paddingHorizontal = (size.width * 0.08).clamp(3.0, 6.0);
-        final paddingVertical = (size.height * 0.05).clamp(3.0, 6.0);
-        final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
-        final cardHeight = (size.height * 0.20).clamp(300.0, 1000.0);
-        final infoMaxWidth =
-            constraints.maxWidth > 1000 ? 800.0 : constraints.maxWidth * 0.9;
+    return FutureBuilder<void>(
+      future: AppConstants.initializationFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-        return Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    isDark
-                        ? Colors.black.withOpacity(0.1)
-                        : Colors.grey.shade100,
-                    isDark ? Colors.black.withOpacity(0.2) : Colors.white,
-                  ],
-                ),
-              ),
-              child: ClipRRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: isDark ? 8.0 : 5.0,
-                    sigmaY: isDark ? 8.0 : 5.0,
-                  ),
-                  child: Container(
-                    color:
-                        isDark
-                            ? Colors.black.withOpacity(0.2)
-                            : Colors.white.withOpacity(0.2),
-                  ),
-                ),
-              ),
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error loading data: ${snapshot.error}',
+              style: const TextStyle(fontSize: 16, color: Colors.red),
             ),
-            _controller == null
-                ? FadeIn(
-                  duration: const Duration(milliseconds: 300),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor,
+          );
+        }
+
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final size = MediaQuery.of(context).size;
+            final heroHeight = (size.height * 0.45).clamp(400.0, 650.0);
+            final paddingHorizontal = (size.width * 0.08).clamp(3.0, 6.0);
+            final paddingVertical = (size.height * 0.05).clamp(3.0, 6.0);
+            final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
+            final cardHeight = (size.height * 0.20).clamp(300.0, 1000.0);
+            final infoMaxWidth =
+                constraints.maxWidth > 1000
+                    ? 800.0
+                    : constraints.maxWidth * 0.9;
+
+            return Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        isDark
+                            ? Colors.black.withOpacity(0.1)
+                            : Colors.grey.shade100,
+                        isDark ? Colors.black.withOpacity(0.2) : Colors.white,
+                      ],
                     ),
                   ),
-                )
-                : SingleChildScrollView(
+                  child: ClipRRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: isDark ? 8.0 : 5.0,
+                        sigmaY: isDark ? 8.0 : 5.0,
+                      ),
+                      child: Container(
+                        color:
+                            isDark
+                                ? Colors.black.withOpacity(0.2)
+                                : Colors.white.withOpacity(0.2),
+                      ),
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     children: [
                       FadeInDown(
@@ -190,7 +195,9 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
                     ],
                   ),
                 ),
-          ],
+              ],
+            );
+          },
         );
       },
     );

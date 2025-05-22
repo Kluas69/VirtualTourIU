@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,8 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   final TextEditingController _searchController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  Timer? _debounceTimer;
+  static final Future<void> _initializationFuture = AppConstants.initialize();
 
   @override
   void initState() {
@@ -39,9 +42,18 @@ class _CategoriesScreenState extends State<CategoriesScreen>
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _updateHoveredIndex(int index) {
+    if (_hoveredIndex != index) {
+      setState(() {
+        _hoveredIndex = index;
+      });
+    }
   }
 
   @override
@@ -52,111 +64,189 @@ class _CategoriesScreenState extends State<CategoriesScreen>
     final isDesktop = mediaQuery.size.width >= 900;
     final screenWidth = mediaQuery.size.width;
 
+    print('CategoriesScreen rebuilt');
+
     return Scaffold(
-      body: Stack(
-        children: [
-          if (isDesktop)
-            Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.center,
-                  radius: 1.5,
-                  colors: [
-                    isDark
-                        ? Colors.black.withOpacity(0.3)
-                        : Colors.grey.shade50,
-                    isDark ? Colors.black.withOpacity(0.5) : Colors.white,
-                  ],
-                ),
-              ),
-            ),
-          SafeArea(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+      body: FutureBuilder<void>(
+        future: _initializationFuture, // Use cached future
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12.0,
-                  vertical: 8.0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(context, isDark),
-                    const SizedBox(height: 8),
-                    _buildAnimatedSearchBar(context),
-                    const SizedBox(height: 12),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final crossAxisCount =
-                            constraints.maxWidth > 900
-                                ? 5
-                                : constraints.maxWidth > 600
-                                ? 4
-                                : 3;
-                        final spacing = (constraints.maxWidth * 0.00001).clamp(
-                          2.0,
-                          2.0,
-                        );
-                        final heightScale = constraints.maxWidth / 1200;
-
-                        final filteredLocations =
-                            locationCards
-                                .asMap()
-                                .entries
-                                .where(
-                                  (entry) => entry.value.title
-                                      .toLowerCase()
-                                      .contains(_searchQuery.toLowerCase()),
-                                )
-                                .toList();
-
-                        if (filteredLocations.isEmpty) {
-                          return FadeInUp(
-                            duration: const Duration(milliseconds: 300),
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(40.0),
-                                child: Text(
-                                  'No locations found',
-                                  style: GoogleFonts.roboto(
-                                    fontSize: 18,
-                                    color: theme.textTheme.bodyMedium?.color,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-
-                        return Padding(
-                          padding: EdgeInsets.all(spacing),
-                          child: MasonryGridView.count(
-                            crossAxisCount: crossAxisCount,
-                            mainAxisSpacing: spacing,
-                            crossAxisSpacing: spacing,
-                            itemCount: filteredLocations.length,
-                            itemBuilder:
-                                (context, index) => _buildGridItem(
-                                  context,
-                                  filteredLocations[index].key,
-                                  theme,
-                                  filteredLocations[index].value.title,
-                                  filteredLocations[index].value.imagePath,
-                                  index,
-                                  heightScale,
-                                ),
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Error loading data: ${snapshot.error}\nPlease check app_data.json and ensure assets are correctly declared in pubspec.yaml.',
+                  style: GoogleFonts.roboto(
+                    fontSize: 16,
+                    color: Colors.red,
+                    textStyle: const TextStyle(height: 1.5),
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-            ),
-          ),
-        ],
+            );
+          }
+
+          print(
+            'CategoriesScreen: ${AppConstants.locationCards.length} locations loaded',
+          );
+
+          return Stack(
+            children: [
+              if (isDesktop)
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.center,
+                      radius: 1.5,
+                      colors: [
+                        isDark
+                            ? Colors.black.withOpacity(0.3)
+                            : Colors.grey.shade50,
+                        isDark ? Colors.black.withOpacity(0.5) : Colors.white,
+                      ],
+                    ),
+                  ),
+                ),
+              SafeArea(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Builder(
+                    builder: (context) {
+                      print('SingleChildScrollView content rebuilt');
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildHeader(context, isDark),
+                            const SizedBox(height: 8),
+                            _buildAnimatedSearchBar(context),
+                            const SizedBox(height: 12),
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final crossAxisCount =
+                                    constraints.maxWidth > 900
+                                        ? 5
+                                        : constraints.maxWidth > 600
+                                        ? 4
+                                        : 3;
+                                final spacing = (constraints.maxWidth * 0.00001)
+                                    .clamp(2.0, 2.0);
+                                final heightScale = constraints.maxWidth / 1200;
+
+                                final filteredLocations =
+                                    AppConstants.locationCards
+                                        .asMap()
+                                        .entries
+                                        .where(
+                                          (entry) => entry.value.title
+                                              .toLowerCase()
+                                              .contains(
+                                                _searchQuery.toLowerCase(),
+                                              ),
+                                        )
+                                        .toList();
+
+                                print(
+                                  'Filtered locations: ${filteredLocations.length}',
+                                );
+
+                                if (AppConstants.locationCards.isEmpty) {
+                                  return FadeInUp(
+                                    duration: const Duration(milliseconds: 300),
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(40.0),
+                                        child: Text(
+                                          'No locations available.\nPlease check app_data.json.',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 18,
+                                            color:
+                                                theme
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color ??
+                                                Colors.grey,
+                                            height: 1.5,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                if (filteredLocations.isEmpty) {
+                                  return FadeInUp(
+                                    duration: const Duration(milliseconds: 300),
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(40.0),
+                                        child: Text(
+                                          'No locations match your search.',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 18,
+                                            color:
+                                                theme
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color ??
+                                                Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return Padding(
+                                  padding: EdgeInsets.all(spacing),
+                                  child: MasonryGridView.count(
+                                    crossAxisCount: crossAxisCount,
+                                    mainAxisSpacing: spacing,
+                                    crossAxisSpacing: spacing,
+                                    itemCount: filteredLocations.length,
+                                    itemBuilder: (context, index) {
+                                      print(
+                                        'Building grid item at index $index',
+                                      );
+                                      return _buildGridItem(
+                                        context,
+                                        filteredLocations[index].key,
+                                        theme,
+                                        filteredLocations[index].value.title,
+                                        filteredLocations[index]
+                                            .value
+                                            .imagePath,
+                                        index,
+                                        heightScale,
+                                      );
+                                    },
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -263,8 +353,18 @@ class _CategoriesScreenState extends State<CategoriesScreen>
       delay: Duration(milliseconds: animationIndex * 50),
       key: ValueKey(index),
       child: MouseRegion(
-        onEnter: (_) => setState(() => _hoveredIndex = index),
-        onExit: (_) => setState(() => _hoveredIndex = -1),
+        onEnter: (_) {
+          _debounceTimer?.cancel();
+          _debounceTimer = Timer(const Duration(milliseconds: 50), () {
+            _updateHoveredIndex(index);
+          });
+        },
+        onExit: (_) {
+          _debounceTimer?.cancel();
+          _debounceTimer = Timer(const Duration(milliseconds: 50), () {
+            _updateHoveredIndex(-1);
+          });
+        },
         child: GestureDetector(
           onTap: () {
             Navigator.push(
