@@ -27,7 +27,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   String _currentLocation = '';
-  double _zoomLevel = 1.0; // Control zoom (field of view)
+  double _zoomLevel = 1.0;
 
   @override
   void initState() {
@@ -104,7 +104,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
   void _zoomIn() {
     if (mounted) {
       setState(() {
-        _zoomLevel = (_zoomLevel * 0.9).clamp(0.5, 2.0); // Decrease FOV
+        _zoomLevel = (_zoomLevel * 0.9).clamp(0.5, 2.0);
       });
       ScaffoldMessenger.of(
         context,
@@ -115,7 +115,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
   void _zoomOut() {
     if (mounted) {
       setState(() {
-        _zoomLevel = (_zoomLevel * 1.1).clamp(0.5, 2.0); // Increase FOV
+        _zoomLevel = (_zoomLevel * 1.1).clamp(0.5, 2.0);
       });
       ScaffoldMessenger.of(
         context,
@@ -126,7 +126,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
   void _resetView() {
     if (mounted) {
       setState(() {
-        _zoomLevel = 1.0; // Reset zoom to default
+        _zoomLevel = 1.0;
       });
       ScaffoldMessenger.of(
         context,
@@ -209,7 +209,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
     if (mounted) {
       setState(() {
         _currentLocation = locationName;
-        _zoomLevel = 1.0; // Reset zoom
+        _zoomLevel = 1.0;
       });
       debugPrint('Panorama loaded for: $locationName');
     }
@@ -224,9 +224,10 @@ class _PanoramaScreenState extends State<PanoramaScreen>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Building PanoramaScreen for $_currentLocation');
     final theme = Theme.of(context);
     final isDark = Provider.of<ThemeProvider>(context).isDark;
+    final mediaQuery = MediaQuery.of(context);
+    final size = mediaQuery.size;
 
     return Scaffold(
       body: LayoutBuilder(
@@ -235,27 +236,25 @@ class _PanoramaScreenState extends State<PanoramaScreen>
           final isTablet =
               constraints.maxWidth >= 600 && constraints.maxWidth < 900;
           final isDesktop = constraints.maxWidth >= 900;
-          final paddingHorizontal =
-              isMobile
-                  ? 16.0
-                  : isTablet
-                  ? 24.0
-                  : 48.0;
-          final paddingVertical =
-              isMobile
-                  ? 12.0
-                  : isTablet
-                  ? 16.0
-                  : 24.0;
+
+          final paddingHorizontal = (size.width * 0.05).clamp(
+            isMobile ? 12.0 : 16.0,
+            isDesktop ? 48.0 : 24.0,
+          );
+          final paddingVertical = (size.height * 0.02).clamp(
+            isMobile ? 8.0 : 12.0,
+            isDesktop ? 24.0 : 16.0,
+          );
           final fontSizeTitle = (constraints.maxWidth * 0.05).clamp(
-            isMobile ? 20.0 : 22.0,
-            isDesktop ? 28.0 : 26.0,
+            isMobile ? 18.0 : 20.0,
+            isDesktop ? 28.0 : 24.0,
           );
           final fontSizeBody = (constraints.maxWidth * 0.035).clamp(
             isMobile ? 14.0 : 15.0,
             isDesktop ? 18.0 : 16.0,
           );
           final maxContentWidth = isDesktop ? 1400.0 : constraints.maxWidth;
+          final buttonSize = (size.width * 0.12).clamp(40.0, 48.0);
 
           final imagePath =
               AppConstants.panoramaImages[_currentLocation] ??
@@ -265,7 +264,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
 
           return Stack(
             children: [
-              // Background gradient
+              // Background gradient and blur effect
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -274,145 +273,151 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                     colors:
                         isDark
                             ? [
-                              Colors.black.withOpacity(0.3),
-                              Colors.grey.shade900.withOpacity(0.7),
+                              Colors.black.withOpacity(0.1),
+                              Colors.black.withOpacity(0.2),
                             ]
-                            : [
-                              Colors.blue.shade50,
-                              Colors.white.withOpacity(0.9),
-                            ],
+                            : [Colors.grey.shade100, Colors.white],
                   ),
                 ),
                 child: ClipRRect(
                   child: BackdropFilter(
                     filter: ImageFilter.blur(
-                      sigmaX: isDark ? 10.0 : 6.0,
-                      sigmaY: isDark ? 10.0 : 6.0,
+                      sigmaX: isDark ? 8.0 : 5.0,
+                      sigmaY: isDark ? 8.0 : 5.0,
                     ),
                     child: Container(
                       color:
                           isDark
-                              ? Colors.black.withOpacity(0.3)
-                              : Colors.white.withOpacity(0.4),
+                              ? Colors.black.withOpacity(0.2)
+                              : Colors.white.withOpacity(0.2),
                     ),
                   ),
                 ),
               ),
-              SafeArea(
-                child:
-                    _isFullScreen
-                        ? Stack(
-                          children: [
-                            Positioned.fill(
-                              child: Panorama(
-                                child: Image.asset(
-                                  imagePath,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    debugPrint(
-                                      'Error loading panorama image: $error',
-                                    );
-                                    _showErrorSnackBar(
-                                      'Failed to load panorama image',
-                                    );
-                                    return const Center(
-                                      child: Icon(Icons.error, size: 48),
-                                    );
-                                  },
-                                ),
-                                zoom: _zoomLevel,
-                                hotspots:
-                                    hotspots.map((hotspot) {
-                                      return Hotspot(
-                                        latitude:
-                                            hotspot['pitch']?.toDouble() ?? 0.0,
-                                        longitude:
-                                            hotspot['yaw']?.toDouble() ?? 0.0,
-                                        width: isMobile ? 60.0 : 80.0,
-                                        height: isMobile ? 60.0 : 80.0,
-                                        widget: GestureDetector(
-                                          onTap: () {
-                                            final newLocation =
-                                                hotspot['sceneId'] as String?;
-                                            debugPrint(
-                                              'Hotspot clicked: $newLocation',
-                                            );
-                                            if (newLocation != null &&
-                                                AppConstants.panoramaImages
-                                                    .containsKey(newLocation)) {
-                                              _loadPanorama(newLocation);
-                                            } else {
-                                              _showErrorSnackBar(
-                                                'Location $newLocation not available',
-                                              );
-                                            }
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  theme.primaryColor,
-                                                  theme.primaryColor
-                                                      .withOpacity(0.7),
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              ),
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2,
-                                              ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.3),
-                                                  blurRadius: 6,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                hotspot['text']?.toString() ??
-                                                    '',
-                                                style: GoogleFonts.roboto(
-                                                  color: Colors.white,
-                                                  fontSize: isMobile ? 12 : 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+              // Main content
+              _isFullScreen
+                  ? Stack(
+                    children: [
+                      // Full-screen panorama
+                      SizedBox(
+                        width: size.width,
+                        height: size.height,
+                        child: Panorama(
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint(
+                                'Error loading panorama image: $error',
+                              );
+                              _showErrorSnackBar(
+                                'Failed to load panorama image',
+                              );
+                              return const Center(
+                                child: Icon(Icons.error, size: 48),
+                              );
+                            },
+                          ),
+                          zoom: _zoomLevel,
+                          hotspots:
+                              hotspots.map((hotspot) {
+                                return Hotspot(
+                                  latitude: hotspot['pitch']?.toDouble() ?? 0.0,
+                                  longitude: hotspot['yaw']?.toDouble() ?? 0.0,
+                                  width: isMobile ? 60.0 : 80.0,
+                                  height: isMobile ? 60.0 : 80.0,
+                                  widget: GestureDetector(
+                                    onTap: () {
+                                      final newLocation =
+                                          hotspot['sceneId'] as String?;
+                                      debugPrint(
+                                        'Hotspot clicked: $newLocation',
                                       );
-                                    }).toList(),
-                              ),
-                            ),
-                            Positioned(
-                              top: paddingVertical,
-                              left: paddingHorizontal,
-                              child: _buildControlButton(
-                                icon: Icons.arrow_back,
-                                onPressed: () {
-                                  debugPrint('Back button pressed');
-                                  Navigator.pop(context);
-                                },
-                                tooltip: 'Back',
-                                theme: theme,
-                                isMobile: isMobile,
-                                isEnabled: true,
-                              ),
-                            ),
-                          ],
-                        )
-                        : Column(
+                                      if (newLocation != null &&
+                                          AppConstants.panoramaImages
+                                              .containsKey(newLocation)) {
+                                        _loadPanorama(newLocation);
+                                      } else {
+                                        _showErrorSnackBar(
+                                          'Location $newLocation not available',
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            theme.primaryColor,
+                                            theme.primaryColor.withOpacity(0.7),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.3,
+                                            ),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          hotspot['text']?.toString() ?? '',
+                                          style: GoogleFonts.roboto(
+                                            color: Colors.white,
+                                            fontSize: isMobile ? 12 : 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                        ),
+                      ),
+                      // Back button
+                      Positioned(
+                        top: paddingVertical,
+                        left: paddingHorizontal,
+                        child: _buildControlButton(
+                          icon: Icons.arrow_back,
+                          onPressed: () {
+                            debugPrint('Back button pressed');
+                            Navigator.pop(context);
+                          },
+                          tooltip: 'Back',
+                          theme: theme,
+                          buttonSize: buttonSize,
+                          isEnabled: true,
+                        ),
+                      ),
+                    ],
+                  )
+                  : SafeArea(
+                    child: SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: maxContentWidth),
+                        child: Column(
                           children: [
+                            // Header
                             FadeInDown(
                               duration: const Duration(milliseconds: 400),
                               child: Container(
                                 padding: EdgeInsets.symmetric(
+                                  horizontal: paddingHorizontal,
+                                  vertical: paddingVertical * 0.5,
+                                ),
+                                margin: EdgeInsets.symmetric(
                                   horizontal: paddingHorizontal,
                                   vertical: paddingVertical * 0.5,
                                 ),
@@ -424,15 +429,11 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                       color:
                                           isDark
                                               ? Colors.black54
-                                              : Colors.grey.withOpacity(0.3),
+                                              : Colors.black.withOpacity(0.2),
                                       blurRadius: 12,
                                       offset: const Offset(0, 6),
                                     ),
                                   ],
-                                ),
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: paddingHorizontal,
-                                  vertical: paddingVertical * 0.5,
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
@@ -468,9 +469,8 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                               color:
                                                   isDark
                                                       ? Colors.black54
-                                                      : Colors.grey.withOpacity(
-                                                        0.3,
-                                                      ),
+                                                      : Colors.black
+                                                          .withOpacity(0.2),
                                               blurRadius: 4,
                                               offset: const Offset(2, 2),
                                             ),
@@ -503,7 +503,15 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 ),
                               ),
                             ),
-                            Expanded(
+                            // Panorama
+                            SizedBox(
+                              height:
+                                  isMobile
+                                      ? size.height * 0.5
+                                      : isTablet
+                                      ? size.height * 0.55
+                                      : size.height * 0.6,
+                              width: double.infinity,
                               child: Panorama(
                                 child: Image.asset(
                                   imagePath,
@@ -590,13 +598,10 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                     }).toList(),
                               ),
                             ),
+                            // Info section
                             FadeInUp(
                               duration: const Duration(milliseconds: 700),
                               child: Container(
-                                width: double.infinity,
-                                constraints: BoxConstraints(
-                                  maxWidth: maxContentWidth,
-                                ),
                                 padding: EdgeInsets.symmetric(
                                   horizontal: paddingHorizontal,
                                   vertical: paddingVertical,
@@ -675,9 +680,12 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 ),
                               ),
                             ),
+                            SizedBox(height: paddingVertical * 2),
                           ],
                         ),
-              ),
+                      ),
+                    ),
+                  ),
               // Control buttons
               GestureDetector(
                 onTap: _toggleControls,
@@ -698,7 +706,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 onPressed: _zoomIn,
                                 tooltip: 'Zoom In',
                                 theme: theme,
-                                isMobile: isMobile,
+                                buttonSize: buttonSize,
                                 isEnabled: true,
                               ),
                               const SizedBox(height: 10),
@@ -707,7 +715,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 onPressed: _zoomOut,
                                 tooltip: 'Zoom Out',
                                 theme: theme,
-                                isMobile: isMobile,
+                                buttonSize: buttonSize,
                                 isEnabled: true,
                               ),
                               const SizedBox(height: 10),
@@ -716,7 +724,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 onPressed: _resetView,
                                 tooltip: 'Reset View',
                                 theme: theme,
-                                isMobile: isMobile,
+                                buttonSize: buttonSize,
                                 isEnabled: true,
                               ),
                               const SizedBox(height: 10),
@@ -725,7 +733,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 onPressed: _toggleInfoOverlay,
                                 tooltip: 'Location Info',
                                 theme: theme,
-                                isMobile: isMobile,
+                                buttonSize: buttonSize,
                                 isEnabled: true,
                               ),
                               const SizedBox(height: 10),
@@ -734,7 +742,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 onPressed: _sharePanorama,
                                 tooltip: 'Share Panorama',
                                 theme: theme,
-                                isMobile: isMobile,
+                                buttonSize: buttonSize,
                                 isEnabled: true,
                               ),
                               const SizedBox(height: 10),
@@ -749,7 +757,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                         ? 'Exit Full Screen'
                                         : 'Enter Full Screen',
                                 theme: theme,
-                                isMobile: isMobile,
+                                buttonSize: buttonSize,
                                 isEnabled: true,
                               ),
                               const SizedBox(height: 10),
@@ -760,7 +768,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 },
                                 tooltip: 'Show Help',
                                 theme: theme,
-                                isMobile: isMobile,
+                                buttonSize: buttonSize,
                                 isEnabled: true,
                               ),
                             ],
@@ -921,7 +929,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
     required VoidCallback onPressed,
     required String tooltip,
     required ThemeData theme,
-    required bool isMobile,
+    required double buttonSize,
     required bool isEnabled,
   }) {
     return Tooltip(
@@ -937,7 +945,8 @@ class _PanoramaScreenState extends State<PanoramaScreen>
           splashColor: isEnabled ? theme.primaryColor.withOpacity(0.3) : null,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: EdgeInsets.all(isMobile ? 12 : 16),
+            width: buttonSize,
+            height: buttonSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
@@ -951,12 +960,18 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              boxShadow: [BoxShadow(blurRadius: 6, offset: const Offset(0, 2))],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Icon(
               icon,
               color: isEnabled ? Colors.white : Colors.grey.shade500,
-              size: isMobile ? 24 : 28,
+              size: buttonSize * 0.5,
             ),
           ),
         ),
