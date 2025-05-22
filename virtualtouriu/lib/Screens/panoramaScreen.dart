@@ -106,9 +106,13 @@ class _PanoramaScreenState extends State<PanoramaScreen>
       setState(() {
         _zoomLevel = (_zoomLevel * 0.9).clamp(0.5, 2.0);
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Zoomed in')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Zoomed in', style: GoogleFonts.roboto(fontSize: 14)),
+          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
+          duration: const Duration(seconds: 1),
+        ),
+      );
     }
   }
 
@@ -117,9 +121,13 @@ class _PanoramaScreenState extends State<PanoramaScreen>
       setState(() {
         _zoomLevel = (_zoomLevel * 1.1).clamp(0.5, 2.0);
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Zoomed out')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Zoomed out', style: GoogleFonts.roboto(fontSize: 14)),
+          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
+          duration: const Duration(seconds: 1),
+        ),
+      );
     }
   }
 
@@ -128,9 +136,13 @@ class _PanoramaScreenState extends State<PanoramaScreen>
       setState(() {
         _zoomLevel = 1.0;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('View reset')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('View reset', style: GoogleFonts.roboto(fontSize: 14)),
+          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
+          duration: const Duration(seconds: 1),
+        ),
+      );
     }
   }
 
@@ -151,8 +163,9 @@ class _PanoramaScreenState extends State<PanoramaScreen>
         builder:
             (context) => AlertDialog(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
               ),
+              backgroundColor: Theme.of(context).cardColor.withOpacity(0.95),
               title: Text(
                 'Share Panorama',
                 style: GoogleFonts.roboto(
@@ -193,9 +206,13 @@ class _PanoramaScreenState extends State<PanoramaScreen>
 
   void _showErrorSnackBar(String message) {
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message, style: GoogleFonts.roboto(fontSize: 14)),
+          backgroundColor: Colors.redAccent.withOpacity(0.9),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -253,14 +270,18 @@ class _PanoramaScreenState extends State<PanoramaScreen>
             isMobile ? 14.0 : 15.0,
             isDesktop ? 18.0 : 16.0,
           );
-          final maxContentWidth = isDesktop ? 1400.0 : constraints.maxWidth;
           final buttonSize = (size.width * 0.12).clamp(40.0, 48.0);
+          final maxContentWidth = isDesktop ? 1400.0 : constraints.maxWidth;
 
           final imagePath =
               AppConstants.panoramaImages[_currentLocation] ??
               AppConstants.fallbackPanoramaImage;
-          final hotspots =
+          final hotspotsRaw =
               AppConstants.panoramaHotspots[_currentLocation] ?? [];
+          final hotspots =
+              hotspotsRaw is List<Map<String, dynamic>>
+                  ? hotspotsRaw
+                  : hotspotsRaw.map((e) => e as Map<String, dynamic>).toList();
 
           return Stack(
             children: [
@@ -303,27 +324,19 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                         width: size.width,
                         height: size.height,
                         child: Panorama(
-                          child: Image.asset(
-                            imagePath,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              debugPrint(
-                                'Error loading panorama image: $error',
-                              );
-                              _showErrorSnackBar(
-                                'Failed to load panorama image',
-                              );
-                              return const Center(
-                                child: Icon(Icons.error, size: 48),
-                              );
-                            },
-                          ),
                           zoom: _zoomLevel,
+                          minZoom: 0.5,
+                          maxZoom: 2.0,
+                          sensitivity: 1.0,
                           hotspots:
                               hotspots.map((hotspot) {
                                 return Hotspot(
-                                  latitude: hotspot['pitch']?.toDouble() ?? 0.0,
-                                  longitude: hotspot['yaw']?.toDouble() ?? 0.0,
+                                  latitude:
+                                      (hotspot['pitch'] as num?)?.toDouble() ??
+                                      0.0,
+                                  longitude:
+                                      (hotspot['yaw'] as num?)?.toDouble() ??
+                                      0.0,
                                   width: isMobile ? 60.0 : 80.0,
                                   height: isMobile ? 60.0 : 80.0,
                                   widget: GestureDetector(
@@ -383,6 +396,22 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                   ),
                                 );
                               }).toList(),
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint(
+                                'Error loading panorama image: $error',
+                              );
+                              _showErrorSnackBar(
+                                'Failed to load panorama image',
+                              );
+                              return const Center(
+                                child: Icon(Icons.error, size: 48),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       // Back button
@@ -401,290 +430,228 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                           isEnabled: true,
                         ),
                       ),
-                    ],
-                  )
-                  : SafeArea(
-                    child: SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: maxContentWidth),
-                        child: Column(
-                          children: [
-                            // Header
-                            FadeInDown(
-                              duration: const Duration(milliseconds: 400),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: paddingHorizontal,
-                                  vertical: paddingVertical * 0.5,
-                                ),
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: paddingHorizontal,
-                                  vertical: paddingVertical * 0.5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: theme.cardColor.withOpacity(0.95),
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          isDark
-                                              ? Colors.black54
-                                              : Colors.black.withOpacity(0.2),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.arrow_back,
-                                        color:
-                                            isDark
-                                                ? Colors.white
-                                                : Colors.black87,
-                                        size: isMobile ? 24 : 28,
-                                      ),
-                                      onPressed: () {
-                                        debugPrint('Back button pressed');
-                                        Navigator.pop(context);
-                                      },
-                                      tooltip: 'Back',
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '$_currentLocation 360° Tour',
-                                        style: GoogleFonts.roboto(
-                                          fontSize: fontSizeTitle,
-                                          fontWeight: FontWeight.w700,
-                                          color:
-                                              isDark
-                                                  ? Colors.white
-                                                  : Colors.black87,
-                                          shadows: [
-                                            Shadow(
-                                              color:
-                                                  isDark
-                                                      ? Colors.black54
-                                                      : Colors.black
-                                                          .withOpacity(0.2),
-                                              blurRadius: 4,
-                                              offset: const Offset(2, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        isDark
-                                            ? Icons.light_mode
-                                            : Icons.dark_mode,
-                                        color:
-                                            isDark
-                                                ? Colors.white
-                                                : Colors.black87,
-                                        size: isMobile ? 24 : 28,
-                                      ),
-                                      onPressed: () {
-                                        debugPrint('Theme toggle pressed');
-                                        Provider.of<ThemeProvider>(
-                                          context,
-                                          listen: false,
-                                        ).toggleTheme();
-                                      },
-                                      tooltip: 'Toggle Theme',
-                                    ),
-                                  ],
-                                ),
-                              ),
+                      // Location title overlay
+                      Positioned(
+                        bottom: 16,
+                        left: paddingHorizontal,
+                        right: paddingHorizontal,
+                        child: FadeInUp(
+                          duration: const Duration(milliseconds: 700),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
                             ),
-                            // Panorama
-                            SizedBox(
-                              height:
-                                  isMobile
-                                      ? size.height * 0.5
-                                      : isTablet
-                                      ? size.height * 0.55
-                                      : size.height * 0.6,
-                              width: double.infinity,
-                              child: Panorama(
-                                child: Image.asset(
-                                  imagePath,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    debugPrint(
-                                      'Error loading panorama image: $error',
-                                    );
-                                    _showErrorSnackBar(
-                                      'Failed to load panorama image',
-                                    );
-                                    return const Center(
-                                      child: Icon(Icons.error, size: 48),
-                                    );
-                                  },
-                                ),
-                                zoom: _zoomLevel,
-                                hotspots:
-                                    hotspots.map((hotspot) {
-                                      return Hotspot(
-                                        latitude:
-                                            hotspot['pitch']?.toDouble() ?? 0.0,
-                                        longitude:
-                                            hotspot['yaw']?.toDouble() ?? 0.0,
-                                        width: isMobile ? 60.0 : 80.0,
-                                        height: isMobile ? 60.0 : 80.0,
-                                        widget: GestureDetector(
-                                          onTap: () {
-                                            final newLocation =
-                                                hotspot['sceneId'] as String?;
-                                            debugPrint(
-                                              'Hotspot clicked: $newLocation',
-                                            );
-                                            if (newLocation != null &&
-                                                AppConstants.panoramaImages
-                                                    .containsKey(newLocation)) {
-                                              _loadPanorama(newLocation);
-                                            } else {
-                                              _showErrorSnackBar(
-                                                'Location $newLocation not available',
-                                              );
-                                            }
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  theme.primaryColor,
-                                                  theme.primaryColor
-                                                      .withOpacity(0.7),
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                              ),
-                                              border: Border.all(
-                                                color: Colors.white,
-                                                width: 2,
-                                              ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.3),
-                                                  blurRadius: 6,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                hotspot['text']?.toString() ??
-                                                    '',
-                                                style: GoogleFonts.roboto(
-                                                  color: Colors.white,
-                                                  fontSize: isMobile ? 12 : 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.black.withOpacity(0.4),
+                                  Colors.black.withOpacity(0.8),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
                               ),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            // Info section
-                            FadeInUp(
-                              duration: const Duration(milliseconds: 700),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: paddingHorizontal,
-                                  vertical: paddingVertical,
-                                ),
-                                child: Card(
-                                  elevation: 8,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                            child: Text(
+                              _currentLocation,
+                              style: GoogleFonts.roboto(
+                                fontSize: fontSizeTitle * 1.2,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    blurRadius: 6,
+                                    offset: const Offset(2, 2),
                                   ),
-                                  color: theme.cardColor.withOpacity(0.95),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Explore $_currentLocation',
-                                          style: GoogleFonts.roboto(
-                                            fontSize: fontSizeTitle * 0.9,
-                                            fontWeight: FontWeight.w700,
-                                            color:
-                                                isDark
-                                                    ? Colors.white
-                                                    : Colors.black87,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          'Experience a fully immersive 360° view of $_currentLocation at Iqra University. '
-                                          'Tap hotspots to navigate or view information.',
-                                          style: GoogleFonts.roboto(
-                                            fontSize: fontSizeBody,
-                                            color:
-                                                isDark
-                                                    ? Colors.white70
-                                                    : Colors.black54,
-                                            height: 1.5,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: TextButton(
-                                            onPressed: () {
-                                              debugPrint('Learn More pressed');
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (
-                                                        context,
-                                                      ) => LocationDetailScreen(
-                                                        locationName:
-                                                            _currentLocation,
-                                                        imagePath:
-                                                            AppConstants
-                                                                .panoramaImages[_currentLocation]!,
-                                                      ),
-                                                ),
-                                              );
-                                            },
-                                            child: Text(
-                                              'Learn More',
-                                              style: GoogleFonts.roboto(
-                                                fontSize: fontSizeBody,
-                                                color: theme.primaryColor,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                ],
                               ),
+                              textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: paddingVertical * 2),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
+                    ],
+                  )
+                  : Stack(
+                    children: [
+                      // Panorama
+                      SizedBox(
+                        width: double.infinity,
+                        height: size.height,
+                        child: Panorama(
+                          zoom: _zoomLevel,
+                          minZoom: 0.5,
+                          maxZoom: 2.0,
+                          sensitivity: 1.0,
+                          hotspots:
+                              hotspots.map((hotspot) {
+                                return Hotspot(
+                                  latitude:
+                                      (hotspot['pitch'] as num?)?.toDouble() ??
+                                      0.0,
+                                  longitude:
+                                      (hotspot['yaw'] as num?)?.toDouble() ??
+                                      0.0,
+                                  width: isMobile ? 60.0 : 80.0,
+                                  height: isMobile ? 60.0 : 80.0,
+                                  widget: GestureDetector(
+                                    onTap: () {
+                                      final newLocation =
+                                          hotspot['sceneId'] as String?;
+                                      debugPrint(
+                                        'Hotspot clicked: $newLocation',
+                                      );
+                                      if (newLocation != null &&
+                                          AppConstants.panoramaImages
+                                              .containsKey(newLocation)) {
+                                        _loadPanorama(newLocation);
+                                      } else {
+                                        _showErrorSnackBar(
+                                          'Location $newLocation not available',
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            theme.primaryColor,
+                                            theme.primaryColor.withOpacity(0.7),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.3,
+                                            ),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          hotspot['text']?.toString() ?? '',
+                                          style: GoogleFonts.roboto(
+                                            color: Colors.white,
+                                            fontSize: isMobile ? 12 : 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                            errorBuilder: (context, error, stackTrace) {
+                              debugPrint(
+                                'Error loading panorama image: $error',
+                              );
+                              _showErrorSnackBar(
+                                'Failed to load panorama image',
+                              );
+                              return const Center(
+                                child: Icon(Icons.error, size: 48),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      // Location title overlay
+                      Positioned(
+                        bottom: 16,
+                        left: paddingHorizontal,
+                        right: paddingHorizontal,
+                        child: FadeInUp(
+                          duration: const Duration(milliseconds: 700),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.black.withOpacity(0.4),
+                                  Colors.black.withOpacity(0.8),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _currentLocation,
+                              style: GoogleFonts.roboto(
+                                fontSize: fontSizeTitle * 1.2,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    blurRadius: 6,
+                                    offset: const Offset(2, 2),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Back and theme toggle buttons
+                      Positioned(
+                        top: paddingVertical,
+                        left: paddingHorizontal,
+                        child: SafeArea(
+                          child: _buildControlButton(
+                            icon: Icons.arrow_back,
+                            onPressed: () {
+                              debugPrint('Back button pressed');
+                              Navigator.pop(context);
+                            },
+                            tooltip: 'Back',
+                            theme: theme,
+                            buttonSize: buttonSize,
+                            isEnabled: true,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: paddingVertical,
+                        right: paddingHorizontal,
+                        child: SafeArea(
+                          child: _buildControlButton(
+                            icon: isDark ? Icons.light_mode : Icons.dark_mode,
+                            onPressed: () {
+                              debugPrint('Theme toggle pressed');
+                              Provider.of<ThemeProvider>(
+                                context,
+                                listen: false,
+                              ).toggleTheme();
+                            },
+                            tooltip: 'Toggle Theme',
+                            theme: theme,
+                            buttonSize: buttonSize,
+                            isEnabled: true,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
               // Control buttons
               GestureDetector(
@@ -789,7 +756,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                       child: Card(
                         elevation: 10,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         color: theme.cardColor.withOpacity(0.95),
                         child: Padding(
@@ -859,7 +826,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                       child: Card(
                         elevation: 10,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         color: theme.cardColor.withOpacity(0.95),
                         child: Padding(
@@ -888,27 +855,70 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 24),
-                              ElevatedButton(
-                                onPressed: _toggleInfoOverlay,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: theme.primaryColor,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: _toggleInfoOverlay,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: theme.primaryColor,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 4,
+                                    ),
+                                    child: Text(
+                                      'Close',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: fontSizeBody,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                  const SizedBox(width: 16),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      debugPrint('Learn More pressed');
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => LocationDetailScreen(
+                                                locationName: _currentLocation,
+                                                imagePath:
+                                                    AppConstants
+                                                        .panoramaImages[_currentLocation]!,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: theme.primaryColor
+                                          .withOpacity(0.8),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 4,
+                                    ),
+                                    child: Text(
+                                      'Learn More',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: fontSizeBody,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
-                                  elevation: 4,
-                                ),
-                                child: Text(
-                                  'Close',
-                                  style: GoogleFonts.roboto(
-                                    fontSize: fontSizeBody,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                                ],
                               ),
                             ],
                           ),

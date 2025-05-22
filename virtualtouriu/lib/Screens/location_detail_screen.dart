@@ -6,6 +6,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
 import 'package:virtualtouriu/core/widgets/custom_button.dart';
 import 'package:virtualtouriu/Screens/PanoramaScreen.dart';
+import 'package:virtualtouriu/core/constants.dart';
 
 class LocationDetailScreen extends StatefulWidget {
   final String locationName;
@@ -28,6 +29,90 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
     final theme = Theme.of(context);
     final isDark = Provider.of<ThemeProvider>(context).isDark;
     final mediaQuery = MediaQuery.of(context);
+
+    // Fetch dynamic features from AppConstants or fallback to default
+    final features =
+        AppConstants.locationFeatures[widget.locationName] ??
+        [
+          {
+            'title': 'Modern Design',
+            'description':
+                'Sleek architecture with state-of-the-art facilities.',
+            'action': () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          PanoramaScreen(locationName: widget.locationName),
+                ),
+              );
+            },
+          },
+          {
+            'title': 'Accessible Location',
+            'description':
+                'Centrally located for easy access across the H-9 campus.',
+            'action': () {
+              showDialog(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: theme.cardColor.withOpacity(0.95),
+                      title: Text(
+                        'Accessible Location',
+                        style: GoogleFonts.roboto(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
+                      ),
+                      content: Text(
+                        'This location is centrally positioned for easy access.',
+                        style: GoogleFonts.roboto(
+                          fontSize: 16,
+                          color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                            0.7,
+                          ),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            'Close',
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              color: theme.primaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+              );
+            },
+          },
+          {
+            'title': 'Versatile Space',
+            'description': 'Perfect for events, meetings, or relaxation.',
+            'action': () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Versatile Space tapped!',
+                    style: GoogleFonts.roboto(fontSize: 14),
+                  ),
+                  backgroundColor: theme.primaryColor.withOpacity(0.9),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+          },
+        ];
 
     return Scaffold(
       body: LayoutBuilder(
@@ -127,6 +212,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                 child: Image.asset(
                                   widget.imagePath,
                                   fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
                                   errorBuilder:
                                       (context, error, stackTrace) => Container(
                                         color: Colors.grey.shade300,
@@ -312,32 +398,21 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                                 alignment: WrapAlignment.start,
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.start,
-                                                children: [
-                                                  _buildFeatureCard(
-                                                    context,
-                                                    'Modern Design',
-                                                    'Sleek architecture with state-of-the-art facilities.',
-                                                    cardWidth * 0.9,
-                                                    fontSizeBody,
-                                                    isDesktop,
-                                                  ),
-                                                  _buildFeatureCard(
-                                                    context,
-                                                    'Accessible Location',
-                                                    'Centrally located for easy access across the H-9 campus.',
-                                                    cardWidth * 0.9,
-                                                    fontSizeBody,
-                                                    isDesktop,
-                                                  ),
-                                                  _buildFeatureCard(
-                                                    context,
-                                                    'Versatile Space',
-                                                    'Perfect for events, meetings, or relaxation.',
-                                                    cardWidth * 0.9,
-                                                    fontSizeBody,
-                                                    isDesktop,
-                                                  ),
-                                                ],
+                                                children:
+                                                    features.map((feature) {
+                                                      return _buildFeatureCard(
+                                                        context,
+                                                        feature['title']
+                                                            as String,
+                                                        feature['description']
+                                                            as String,
+                                                        feature['action']
+                                                            as VoidCallback?,
+                                                        cardWidth * 0.9,
+                                                        fontSizeBody,
+                                                        isDesktop,
+                                                      );
+                                                    }).toList(),
                                               ),
                                             ],
                                           ),
@@ -441,32 +516,21 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
                                                 alignment: WrapAlignment.center,
                                                 crossAxisAlignment:
                                                     WrapCrossAlignment.center,
-                                                children: [
-                                                  _buildFeatureCard(
-                                                    context,
-                                                    'Modern Design',
-                                                    'Sleek architecture with state-of-the-art facilities.',
-                                                    cardWidth,
-                                                    fontSizeBody,
-                                                    isDesktop,
-                                                  ),
-                                                  _buildFeatureCard(
-                                                    context,
-                                                    'Accessible Location',
-                                                    'Centrally located for easy access across the H-9 campus.',
-                                                    cardWidth,
-                                                    fontSizeBody,
-                                                    isDesktop,
-                                                  ),
-                                                  _buildFeatureCard(
-                                                    context,
-                                                    'Versatile Space',
-                                                    'Perfect for events, meetings, or relaxation.',
-                                                    cardWidth,
-                                                    fontSizeBody,
-                                                    isDesktop,
-                                                  ),
-                                                ],
+                                                children:
+                                                    features.map((feature) {
+                                                      return _buildFeatureCard(
+                                                        context,
+                                                        feature['title']
+                                                            as String,
+                                                        feature['description']
+                                                            as String,
+                                                        feature['action']
+                                                            as VoidCallback?,
+                                                        cardWidth,
+                                                        fontSizeBody,
+                                                        isDesktop,
+                                                      );
+                                                    }).toList(),
                                               ),
                                             ),
                                           ],
@@ -513,6 +577,7 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
     BuildContext context,
     String title,
     String description,
+    VoidCallback? onTap,
     double cardWidth,
     double fontSize,
     bool isDesktop,
@@ -525,60 +590,66 @@ class _LocationDetailScreenState extends State<LocationDetailScreen>
         return MouseRegion(
           onEnter: isDesktop ? (_) => setState(() => isHovered = true) : null,
           onExit: isDesktop ? (_) => setState(() => isHovered = false) : null,
-          child: AnimatedScale(
-            scale: isHovered ? 1.05 : 1.0,
-            duration: const Duration(milliseconds: 200),
-            child: Container(
-              width: cardWidth,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  colors:
-                      isHovered
-                          ? [theme.cardColor, theme.cardColor.withOpacity(0.8)]
-                          : [
-                            theme.cardColor.withOpacity(0.9),
-                            theme.cardColor.withOpacity(0.7),
-                          ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color:
+          child: GestureDetector(
+            onTap: onTap,
+            child: AnimatedScale(
+              scale: isHovered ? 1.05 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: Container(
+                width: cardWidth,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors:
                         isHovered
-                            ? theme.primaryColor.withOpacity(
-                              isDesktop ? 0.4 : 0.3,
-                            )
-                            : Colors.black.withOpacity(0.1),
-                    blurRadius: isHovered ? (isDesktop ? 12 : 10) : 6,
-                    offset: Offset(0, isHovered ? (isDesktop ? 8 : 6) : 4),
+                            ? [
+                              theme.cardColor,
+                              theme.cardColor.withOpacity(0.8),
+                            ]
+                            : [
+                              theme.cardColor.withOpacity(0.9),
+                              theme.cardColor.withOpacity(0.7),
+                            ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.roboto(
-                      fontSize: fontSize * 1.1,
-                      fontWeight: FontWeight.w600,
-                      color: theme.textTheme.bodyMedium?.color,
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          isHovered
+                              ? theme.primaryColor.withOpacity(
+                                isDesktop ? 0.4 : 0.3,
+                              )
+                              : Colors.black.withOpacity(0.1),
+                      blurRadius: isHovered ? (isDesktop ? 12 : 10) : 6,
+                      offset: Offset(0, isHovered ? (isDesktop ? 8 : 6) : 4),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: GoogleFonts.roboto(
-                      fontSize: fontSize * 0.9,
-                      color: theme.textTheme.bodyMedium?.color?.withOpacity(
-                        0.7,
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.roboto(
+                        fontSize: fontSize * 1.1,
+                        fontWeight: FontWeight.w600,
+                        color: theme.textTheme.bodyMedium?.color,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      description,
+                      style: GoogleFonts.roboto(
+                        fontSize: fontSize * 0.9,
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                          0.7,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -19,16 +19,18 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
   int _selectedIndex = -1;
   Timer? _shuffleTimer;
   bool _isInteracting = false;
+  late List<LocationCardData> _displayedCards; // Mutable copy of locationCards
 
   @override
   void initState() {
     super.initState();
+    _displayedCards = List.from(locationCards); // Create a mutable copy
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewportFraction = _computeViewportFraction(
         MediaQuery.of(context).size.width,
       );
       final middleIndex =
-          locationCards.isNotEmpty ? locationCards.length ~/ 2 : 0;
+          _displayedCards.isNotEmpty ? _displayedCards.length ~/ 2 : 0;
       if (mounted) {
         setState(() {
           _controller = PageController(
@@ -52,7 +54,9 @@ class _TabletHomeScreenState extends State<TabletHomeScreen> {
   void _startShuffleTimer() {
     _shuffleTimer = Timer.periodic(const Duration(seconds: 7), (_) {
       if (!_isInteracting && mounted) {
-        setState(() => locationCards.shuffle());
+        setState(() {
+          _displayedCards.shuffle(); // Shuffle the mutable copy
+        });
       }
     });
   }
