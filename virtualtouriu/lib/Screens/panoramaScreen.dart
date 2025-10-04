@@ -278,10 +278,7 @@ class _PanoramaScreenState extends State<PanoramaScreen>
               AppConstants.fallbackPanoramaImage;
           final hotspotsRaw =
               AppConstants.panoramaHotspots[_currentLocation] ?? [];
-          final hotspots =
-              hotspotsRaw is List<Map<String, dynamic>>
-                  ? hotspotsRaw
-                  : hotspotsRaw.map((e) => e as Map<String, dynamic>).toList();
+          final hotspots = hotspotsRaw;
 
           return Stack(
             children: [

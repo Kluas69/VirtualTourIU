@@ -134,7 +134,7 @@ class HomeScreen extends StatelessWidget {
       child: Stack(
         children: [
           Image.asset(
-            'lib/images/main2.jpg',
+            'lib/images/backgroundiu.jpg',
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
