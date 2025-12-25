@@ -2,15 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:virtualtouriu/Screens/HomeScreen.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
-import 'package:virtualtouriu/core/constants.dart';
 
-void main() async {
-  // Ensure Flutter bindings are initialized
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize AppConstants asynchronously
-  await AppConstants.initialize();
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -19,15 +12,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Wrap the entire app with ChangeNotifierProvider
     return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+      create: (context) => ThemeProvider(),
       child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
+        builder: (context, themeProvider, child) {
           return MaterialApp(
-            title: 'Iqra University Virtual Tour',
-            theme: themeProvider.theme,
-            home: const HomeScreen(),
+            title: 'IQRA Virtual Tour',
             debugShowCheckedModeBanner: false,
+            theme:
+                themeProvider
+                    .theme, // Use the theme getter from your ThemeProvider
+            themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
+            home: const HomeScreen(),
           );
         },
       ),

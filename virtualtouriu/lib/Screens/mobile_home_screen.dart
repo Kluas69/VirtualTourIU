@@ -1,7 +1,7 @@
-import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:virtualtouriu/Screens/HomeScreen.dart';
 import 'package:virtualtouriu/core/constants.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
@@ -15,50 +15,45 @@ class MobileHomeScreen extends StatefulWidget {
 }
 
 class _MobileHomeScreenState extends State<MobileHomeScreen> {
-  PageController? _controller;
+  late PageController _controller;
   int _selectedIndex = 0;
-  Timer? _shuffleTimer;
   bool _isInteracting = false;
 
   @override
   void initState() {
     super.initState();
-    final middleIndex =
-        AppConstants.locationCards.isNotEmpty
-            ? AppConstants.locationCards.length ~/ 2
-            : 0;
+    final middleIndex = AppConstants.locationCards.length ~/ 2;
+
     _controller = PageController(
-      viewportFraction: 0.57,
+      viewportFraction: 0.85,
       initialPage: middleIndex,
     );
     _selectedIndex = middleIndex;
-    _startShuffleTimer();
-  }
 
-  void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 7), (_) {
-      if (!_isInteracting && mounted && _controller != null) {
-        final nextIndex =
-            (_selectedIndex + 1) % AppConstants.locationCards.length;
-        _controller!.animateToPage(
-          nextIndex,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
+    _controller.addListener(() {
+      if (_controller.hasClients) {
+        final newIndex = _controller.page?.round() ?? middleIndex;
+        if (newIndex != _selectedIndex) {
+          setState(() {
+            _selectedIndex = newIndex;
+            _isInteracting = true;
+          });
+        }
       }
     });
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
-    _shuffleTimer?.cancel();
+    _controller.removeListener(() {});
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDark;
+    final size = MediaQuery.of(context).size;
 
     return FutureBuilder<void>(
       future: AppConstants.initializationFuture,
@@ -66,128 +61,125 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              'Error loading data: ${snapshot.error}',
-              style: const TextStyle(fontSize: 16, color: Colors.red),
+              'Error: ${snapshot.error}',
+              style: const TextStyle(color: Colors.red, fontSize: 16),
             ),
           );
         }
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final size = MediaQuery.of(context).size;
-            final heroHeight = (size.height * 0.35).clamp(200.0, 400.0);
-            final paddingHorizontal = (size.width * 0.08).clamp(12.0, 16.0);
-            final paddingVertical = (size.height * 0.05).clamp(8.0, 10.0);
-            final fontSize = (size.width * 0.05).clamp(20.0, 28.0);
-            final cardHeight = (size.height * 0.38).clamp(50.0, 250.0);
-            final infoMaxWidth = constraints.maxWidth * 0.9;
+        final double heroHeight = size.height * 0.70;
+        final double cardHeight = size.height * 0.55;
 
-            return Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
+        return Stack(
+          children: [
+            // Background blur
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    isDark
+                        ? Colors.black.withOpacity(0.1)
+                        : Colors.grey.shade100,
+                    isDark ? Colors.black.withOpacity(0.2) : Colors.white,
+                  ],
+                ),
+              ),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: isDark ? 8.0 : 5.0,
+                    sigmaY: isDark ? 8.0 : 5.0,
+                  ),
+                  child: Container(
+                    color:
                         isDark
-                            ? Colors.black.withOpacity(0.1)
-                            : Colors.grey.shade100,
-                        isDark ? Colors.black.withOpacity(0.2) : Colors.white,
-                      ],
-                    ),
-                  ),
-                  child: ClipRRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: isDark ? 8.0 : 5.0,
-                        sigmaY: isDark ? 8.0 : 5.0,
-                      ),
-                      child: Container(
-                        color:
-                            isDark
-                                ? Colors.black.withOpacity(0.2)
-                                : Colors.white.withOpacity(0.2),
-                      ),
-                    ),
+                            ? Colors.black.withOpacity(0.2)
+                            : Colors.white.withOpacity(0.2),
                   ),
                 ),
-                SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    children: [
-                      FadeInDown(
-                        duration: const Duration(milliseconds: 400),
-                        child: SizedBox(
-                          height: heroHeight,
-                          width: double.infinity,
-                          child: HomeScreen.buildHeroSection(
-                            context: context,
-                            fontSize: fontSize,
-                            heightFactor: 0.5,
-                          ),
-                        ),
+              ),
+            ),
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  // Hero Section
+                  FadeInDown(
+                    duration: const Duration(milliseconds: 600),
+                    child: SizedBox(
+                      height: heroHeight,
+                      width: double.infinity,
+                      child: HomeScreen.buildHeroSection(
+                        context: context,
+                        fontSize: size.width * 0.12,
+                        heightFactor: 1.0,
                       ),
-                      FadeInUp(
-                        duration: const Duration(milliseconds: 300),
-                        from: 10.0,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: paddingHorizontal,
-                            vertical: paddingVertical,
-                          ),
-                          width: double.infinity,
-                          constraints: BoxConstraints(maxWidth: infoMaxWidth),
-                          child: HomeScreen.buildInfoSection(
-                            context: context,
-                            isMobile: true,
-                          ),
-                        ),
-                      ),
-                      FadeInUp(
-                        duration: const Duration(milliseconds: 300),
-                        from: 10.0,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: paddingHorizontal,
-                            vertical: paddingVertical,
-                          ),
-                          width: double.infinity,
-                          child: HomeScreen.buildCarousel(
-                            context: context,
-                            cardHeight: cardHeight,
-                            controller: _controller!,
-                            selectedIndex: _selectedIndex,
-                            isInteracting: _isInteracting,
-                            onTap: (index) {
-                              setState(() {
-                                _selectedIndex = index;
-                                _isInteracting = false;
-                              });
-                            },
-                            setInteracting:
-                                (value) =>
-                                    setState(() => _isInteracting = value),
-                            onPageChanged:
-                                (index) => setState(() {
-                                  _selectedIndex = index;
-                                  _isInteracting = false;
-                                }),
-                            isDesktop: false,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: paddingVertical * 2),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                  SizedBox(height: size.height * 0.04),
+
+                  // Info Section
+                  FadeInUp(
+                    duration: const Duration(milliseconds: 700),
+                    child: HomeScreen.buildInfoSection(
+                      context: context,
+                      isMobile: true,
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.06),
+
+                  // Carousel Section
+                  FadeInUp(
+                    duration: const Duration(milliseconds: 900),
+                    delay: const Duration(milliseconds: 200),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: size.width * 0.04,
+                      ),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: cardHeight,
+                            child: HomeScreen.buildCarousel(
+                              context: context,
+                              cardHeight: cardHeight,
+                              controller: _controller,
+                              selectedIndex: _selectedIndex,
+                              isInteracting: _isInteracting,
+                              onPageChanged:
+                                  (index) =>
+                                      setState(() => _selectedIndex = index),
+                              isDesktop: false,
+                              onTap: (index) {},
+                              setInteracting: (value) {},
+                            ),
+                          ),
+                          SizedBox(height: 24),
+                          SmoothPageIndicator(
+                            controller: _controller,
+                            count: AppConstants.locationCards.length,
+                            effect: ExpandingDotsEffect(
+                              dotWidth: 10,
+                              dotHeight: 10,
+                              spacing: 8,
+                              activeDotColor: Theme.of(context).primaryColor,
+                              dotColor: Colors.grey.shade400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.12),
+                ],
+              ),
+            ),
+          ],
         );
       },
     );

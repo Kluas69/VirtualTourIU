@@ -1,7 +1,7 @@
-import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:virtualtouriu/Screens/HomeScreen.dart';
 import 'package:virtualtouriu/core/constants.dart';
 import 'package:virtualtouriu/themes/Themes.dart';
@@ -15,30 +15,40 @@ class DesktopHomeScreen extends StatefulWidget {
 }
 
 class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
-  PageController? _controller;
+  late PageController _controller;
   int _selectedIndex = 0;
-  Timer? _shuffleTimer;
   bool _isInteracting = false;
-  late List<LocationCardData> _displayedCards;
 
   @override
   void initState() {
     super.initState();
-    _displayedCards = List.from(AppConstants.locationCards);
-    final viewportFraction = _computeViewportFraction(
-      WidgetsBinding.instance.window.physicalSize.width /
-          WidgetsBinding.instance.window.devicePixelRatio,
-    );
-    final middleIndex =
-        _displayedCards.isNotEmpty ? _displayedCards.length ~/ 2 : 0;
+    final middleIndex = AppConstants.locationCards.length ~/ 2;
+
+    // Professional viewport fractions for desktop - shows 3-4 cards perfectly
+    final double width =
+        WidgetsBinding.instance.window.physicalSize.width /
+        WidgetsBinding.instance.window.devicePixelRatio;
+
+    final double viewportFraction;
+    if (width > 2000) {
+      viewportFraction = 0.26; // Ultra-wide: ~4 cards visible
+    } else if (width > 1600) {
+      viewportFraction = 0.30; // Wide: ~3.5 cards
+    } else if (width > 1200) {
+      viewportFraction = 0.34; // Standard desktop: ~3 cards
+    } else {
+      viewportFraction = 0.38; // Smaller desktop: ~2.5 cards
+    }
+
     _controller = PageController(
       viewportFraction: viewportFraction,
       initialPage: middleIndex,
     );
     _selectedIndex = middleIndex;
-    _controller!.addListener(() {
-      if (_controller!.hasClients) {
-        final newIndex = _controller!.page?.round() ?? middleIndex;
+
+    _controller.addListener(() {
+      if (_controller.hasClients) {
+        final newIndex = _controller.page?.round() ?? middleIndex;
         if (newIndex != _selectedIndex) {
           setState(() {
             _selectedIndex = newIndex;
@@ -47,37 +57,19 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
         }
       }
     });
-    _startShuffleTimer();
-  }
-
-  double _computeViewportFraction(double width) {
-    if (width > 1800) return 0.25;
-    if (width > 1400) return 0.40;
-    if (width > 1000) return 0.42;
-    return 0.45;
-  }
-
-  void _startShuffleTimer() {
-    _shuffleTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      if (!_isInteracting && mounted) {
-        setState(() {
-          _displayedCards.shuffle();
-        });
-      }
-    });
   }
 
   @override
   void dispose() {
-    _controller?.removeListener(() {});
-    _controller?.dispose();
-    _shuffleTimer?.cancel();
+    _controller.removeListener(() {});
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDark;
+    final size = MediaQuery.of(context).size;
 
     return FutureBuilder<void>(
       future: AppConstants.initializationFuture,
@@ -85,152 +77,142 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              'Error loading data: ${snapshot.error}',
-              style: const TextStyle(fontSize: 16, color: Colors.red),
+              'Error: ${snapshot.error}',
+              style: const TextStyle(color: Colors.red, fontSize: 16),
             ),
           );
         }
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final size = MediaQuery.of(context).size;
-            final heroHeight = (size.height * 0.5).clamp(400.0, 600.0);
-            final paddingHorizontal = (size.width * 0.07).clamp(3.0, 6.0);
-            final paddingVertical = (size.height * 0.55).clamp(3.0, 6.0);
-            final fontSize = (size.width * 0.05).clamp(26.0, 50.0);
-            final cardHeight = (size.height * 0.35).clamp(325.0, 1200.0);
+        // PROFESSIONAL GOLDEN RATIOS FOR DESKTOP
+        final double heroHeight = (size.height * 0.52).clamp(500.0, 650.0);
 
-            return Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
+        // Ideal card height: 16:9 aspect ratio, perfect for desktop galleries
+        final double idealCardHeight = (size.width * 0.20).clamp(420.0, 520.0);
+        final double cardSectionPadding = size.width * 0.04;
+
+        return Stack(
+          children: [
+            // Background blur
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    isDark
+                        ? Colors.black.withOpacity(0.1)
+                        : Colors.grey.shade100,
+                    isDark ? Colors.black.withOpacity(0.2) : Colors.white,
+                  ],
+                ),
+              ),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: isDark ? 8.0 : 5.0,
+                    sigmaY: isDark ? 8.0 : 5.0,
+                  ),
+                  child: Container(
+                    color:
                         isDark
-                            ? Colors.black.withOpacity(0.1)
-                            : Colors.grey.shade100,
-                        isDark ? Colors.black.withOpacity(0.2) : Colors.white,
-                      ],
-                    ),
-                  ),
-                  child: ClipRRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: isDark ? 8.0 : 5.0,
-                        sigmaY: isDark ? 8.0 : 5.0,
-                      ),
-                      child: Container(
-                        color:
-                            isDark
-                                ? Colors.black.withOpacity(0.2)
-                                : Colors.white.withOpacity(0.2),
-                      ),
-                    ),
+                            ? Colors.black.withOpacity(0.2)
+                            : Colors.white.withOpacity(0.2),
                   ),
                 ),
-                SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    children: [
-                      FadeInDown(
-                        duration: const Duration(milliseconds: 400),
-                        child: SizedBox(
-                          height: heroHeight,
-                          width: double.infinity,
-                          child: HomeScreen.buildHeroSection(
-                            context: context,
-                            fontSize: fontSize,
-                            heightFactor: 1.0,
-                          ),
-                        ),
+              ),
+            ),
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  // Hero Section - Professional proportions
+                  FadeInDown(
+                    duration: const Duration(milliseconds: 600),
+                    child: SizedBox(
+                      height: heroHeight,
+                      width: double.infinity,
+                      child: HomeScreen.buildHeroSection(
+                        context: context,
+                        fontSize: (size.width * 0.06).clamp(42.0, 64.0),
+                        heightFactor: 1.0,
                       ),
-                      FadeIn(
-                        duration: const Duration(milliseconds: 300),
-                        delay: const Duration(milliseconds: 50),
-                        child: Divider(
-                          color:
-                              isDark
-                                  ? Colors.white.withOpacity(0.3)
-                                  : Colors.grey.withOpacity(0.5),
-                          thickness: 1.0,
-                          indent: paddingHorizontal,
-                          endIndent: paddingHorizontal,
-                        ),
-                      ),
-                      FadeInUp(
-                        duration: const Duration(milliseconds: 100),
-                        delay: const Duration(milliseconds: 50),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: paddingHorizontal,
-                            vertical: paddingVertical,
-                          ),
-                          width: double.infinity,
-                          child: HomeScreen.buildInfoSection(
-                            context: context,
-                            isMobile: false,
-                          ),
-                        ),
-                      ),
-                      FadeIn(
-                        duration: const Duration(milliseconds: 300),
-                        delay: const Duration(milliseconds: 150),
-                        child: Divider(
-                          color:
-                              isDark
-                                  ? Colors.white.withOpacity(0.3)
-                                  : Colors.grey.withOpacity(0.5),
-                          thickness: 1.0,
-                          indent: paddingHorizontal,
-                          endIndent: paddingHorizontal,
-                        ),
-                      ),
-                      FadeInUp(
-                        duration: const Duration(milliseconds: 400),
-                        delay: const Duration(milliseconds: 200),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: paddingHorizontal,
-                            vertical: paddingVertical * 0.5,
-                          ),
-                          width: double.infinity,
-                          child: HomeScreen.buildCarousel(
-                            context: context,
-                            cardHeight: cardHeight,
-                            controller: _controller!,
-                            selectedIndex: _selectedIndex,
-                            isInteracting: _isInteracting,
-                            onTap: (index) {
-                              setState(() {
-                                _selectedIndex = index;
-                                _isInteracting = false;
-                              });
-                            },
-                            setInteracting:
-                                (value) =>
-                                    setState(() => _isInteracting = value),
-                            onPageChanged:
-                                (index) => setState(() {
-                                  _selectedIndex = index;
-                                  _isInteracting = false;
-                                }),
-                            isDesktop: true,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: paddingVertical * 2),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                  SizedBox(height: size.height * 0.04),
+
+                  // Info Section
+                  FadeInUp(
+                    duration: const Duration(milliseconds: 700),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: size.width * 0.08,
+                      ),
+                      child: HomeScreen.buildInfoSection(
+                        context: context,
+                        isMobile: false,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.06),
+
+                  // CAROUSEL SECTION - PROFESSIONAL DESKTOP SIZING
+                  FadeInUp(
+                    duration: const Duration(milliseconds: 900),
+                    delay: const Duration(milliseconds: 200),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: cardSectionPadding,
+                        vertical: size.height * 0.03,
+                      ),
+                      constraints: BoxConstraints(
+                        maxWidth: 1600,
+                      ), // Max width for ultra-wide screens
+                      child: Column(
+                        children: [
+                          // Cards container with perfect spacing
+                          SizedBox(
+                            height:
+                                idealCardHeight + 40, // Extra space for shadows
+                            child: HomeScreen.buildCarousel(
+                              context: context,
+                              cardHeight: idealCardHeight,
+                              controller: _controller,
+                              selectedIndex: _selectedIndex,
+                              isInteracting: _isInteracting,
+                              onPageChanged:
+                                  (index) =>
+                                      setState(() => _selectedIndex = index),
+                              isDesktop: true,
+                              onTap: (index) {},
+                              setInteracting: (value) {},
+                            ),
+                          ),
+                          SizedBox(height: 24),
+                          // Professional indicator
+                          SmoothPageIndicator(
+                            controller: _controller,
+                            count: AppConstants.locationCards.length,
+                            effect: WormEffect(
+                              dotWidth: 12,
+                              dotHeight: 12,
+                              spacing: 8,
+                              // activeDotColor: theme.primaryColor,
+                              dotColor: Colors.grey.shade400,
+                              paintStyle: PaintingStyle.fill,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.08),
+                ],
+              ),
+            ),
+          ],
         );
       },
     );

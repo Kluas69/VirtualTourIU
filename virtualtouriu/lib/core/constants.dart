@@ -6,7 +6,7 @@ class LocationCardData {
   final String title;
   final String imagePath;
 
-  const LocationCardData({
+  LocationCardData({
     required this.tag,
     required this.title,
     required this.imagePath,
@@ -14,110 +14,117 @@ class LocationCardData {
 
   factory LocationCardData.fromJson(Map<String, dynamic> json) {
     return LocationCardData(
-      tag: json['tag'] as String,
-      title: json['title'] as String,
-      imagePath: json['imagePath'] as String,
+      tag: json['tag'] ?? '',
+      title: json['title'] ?? '',
+      imagePath: json['imagePath'] ?? '',
     );
   }
 }
 
-class AppAssets {
-  static const String mainImage = 'lib/images/main2.jpg';
-}
-
 class AppConstants {
-  // Static future to cache the initialization
-  static final Future<void> initializationFuture = initialize();
-
-  static List<LocationCardData>? _locationCards;
-  static List<LocationCardData>? _topFiveCards;
-  static Map<String, String>? _panoramaImages;
-  static String? _fallbackPanoramaImage;
-  static Map<String, List<Map<String, dynamic>>>? _panoramaHotspots;
-  static Map<String, List<Map<String, dynamic>>>? _locationFeatures;
+  static late List<LocationCardData> locationCards;
+  static late Map<String, String> panoramaImages;
+  static late String fallbackPanoramaImage;
+  static late Map<String, List<Map<String, dynamic>>> panoramaHotspots;
+  static late Map<String, List<Map<String, dynamic>>> locationFeatures;
 
   static Future<void> initialize() async {
     try {
+      // 1. Hardcoded local asset images for location cards → super fast loading
+      locationCards = [
+        LocationCardData(
+          tag: "Discover",
+          title: "Library",
+          imagePath: "lib/images/library.jpg",
+        ),
+        LocationCardData(
+          tag: "Exclusive",
+          title: "Play Area",
+          imagePath: "lib/images/ground.jpg",
+        ),
+        LocationCardData(
+          tag: "NEW",
+          title: "Auditorium",
+          imagePath: "lib/images/auditorium.jpg",
+        ),
+        LocationCardData(
+          tag: "NEW",
+          title: "Class Rooms",
+          imagePath: "lib/images/class.jpg",
+        ),
+        LocationCardData(
+          tag: "Discover",
+          title: "Amphitheater",
+          imagePath: "lib/images/Amphitheater.jpg",
+        ),
+        LocationCardData(
+          tag: "Discover",
+          title: "Cafeteria",
+          imagePath: "lib/images/cafe.jpg",
+        ),
+        LocationCardData(
+          tag: "Discover",
+          title: "Common Room",
+          imagePath: "lib/images/commonroom.jpg",
+        ),
+        LocationCardData(
+          tag: "Discover",
+          title: "Playground",
+          imagePath: "lib/images/playground.jpg",
+        ),
+        LocationCardData(
+          tag: "Discover",
+          title: "Swimming Pool",
+          imagePath: "lib/images/swimming.jpg",
+        ),
+        LocationCardData(
+          tag: "Discover",
+          title: "Webinar Room",
+          imagePath: "lib/images/webinarroom.jpg",
+        ),
+      ];
+
+      // 2. Load the rest (panoramas, hotspots, features) from JSON
       final String jsonString = await rootBundle.loadString(
         'assets/app_data.json',
       );
-      final Map<String, dynamic> jsonData = jsonDecode(jsonString);
+      final Map<String, dynamic> json = jsonDecode(jsonString);
 
-      // Parse locationCards
-      _locationCards =
-          (jsonData['locationCards'] as List<dynamic>)
-              .map(
-                (item) =>
-                    LocationCardData.fromJson(item as Map<String, dynamic>),
-              )
-              .toList();
+      panoramaImages = Map<String, String>.from(json['panoramaImages'] ?? {});
 
-      // Compute topFiveCards
-      _topFiveCards = _locationCards?.toSet().take(5).toList();
+      fallbackPanoramaImage = json['fallbackPanoramaImage'] ?? '';
 
-      // Parse panoramaImages
-      _panoramaImages =
-          (jsonData['panoramaImages'] as Map<String, dynamic>)
-              .cast<String, String>();
+      final Map<String, dynamic> hotspotsJson = json['panoramaHotspots'] ?? {};
+      panoramaHotspots = hotspotsJson.map((key, value) {
+        return MapEntry(key, List<Map<String, dynamic>>.from(value));
+      });
 
-      // Parse fallbackPanoramaImage
-      _fallbackPanoramaImage = jsonData['fallbackPanoramaImage'] as String;
-
-      // Parse panoramaHotspots
-      _panoramaHotspots = (jsonData['panoramaHotspots'] as Map<String, dynamic>)
-          .map(
-            (key, value) => MapEntry(
-              key,
-              (value as List<dynamic>)
-                  .map((item) => item as Map<String, dynamic>)
-                  .toList(),
-            ),
-          );
-
-      // Parse locationFeatures
-      _locationFeatures = (jsonData['locationFeatures'] as Map<String, dynamic>)
-          .map(
-            (key, value) => MapEntry(
-              key,
-              (value as List<dynamic>)
-                  .map((item) => item as Map<String, dynamic>)
-                  .toList(),
-            ),
-          );
+      final Map<String, dynamic> featuresJson = json['locationFeatures'] ?? {};
+      locationFeatures = featuresJson.map((key, value) {
+        return MapEntry(key, List<Map<String, dynamic>>.from(value));
+      });
     } catch (e) {
-      // Handle errors (e.g., file not found, JSON parsing error)
-      print('Error loading app_data.json: $e');
-      // Initialize with empty data to prevent crashes
-      _locationCards = [];
-      _topFiveCards = [];
-      _panoramaImages = {};
-      _fallbackPanoramaImage = '';
-      _panoramaHotspots = {};
-      _locationFeatures = {};
+      print('Error initializing AppConstants: $e');
+      rethrow;
     }
   }
 
-  static List<LocationCardData> get locationCards {
-    return _locationCards ?? [];
+  // Determine view type (WebGL or Panorama)
+  static String viewTypeFor(String locationName) {
+    if (locationName == 'Class Rooms') {
+      return 'webgl';
+    }
+    return 'panorama';
   }
 
-  static List<LocationCardData> get topFiveCards {
-    return _topFiveCards ?? [];
+  // Return WebGL URL if applicable
+  static String? webglUrlFor(String locationName) {
+    if (locationName == 'Class Rooms') {
+      return 'https://virtual-tour-iu.web.app';
+    }
+    return null;
   }
 
-  static Map<String, String> get panoramaImages {
-    return _panoramaImages ?? {};
-  }
-
-  static String get fallbackPanoramaImage {
-    return _fallbackPanoramaImage ?? '';
-  }
-
-  static Map<String, List<Map<String, dynamic>>> get panoramaHotspots {
-    return _panoramaHotspots ?? {};
-  }
-
-  static Map<String, List<Map<String, dynamic>>> get locationFeatures {
-    return _locationFeatures ?? {};
-  }
+  // Single future to ensure initialize() is called only once
+  static final Future<void> initializationFuture = initialize();
 }

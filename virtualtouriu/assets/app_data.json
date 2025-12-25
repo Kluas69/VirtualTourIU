@@ -3,67 +3,67 @@
     {
       "tag": "Discover",
       "title": "Library",
-      "imagePath": "lib/images/library.jpg"
+      "imagePath": "https://pbs.twimg.com/media/BvRG3dgCYAAXhsn.jpg"
     },
     {
       "tag": "Exclusive",
       "title": "Play Area",
-      "imagePath": "lib/images/ground.jpg"
+      "imagePath": "https://iuisl.iqra.edu.pk/wp-content/uploads/2-1024x576.jpg"
     },
     {
       "tag": "NEW",
       "title": "Auditorium",
-      "imagePath": "lib/images/auditorium.jpg"
+      "imagePath": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=2131412113619715"
     },
     {
       "tag": "NEW",
       "title": "Class Rooms",
-      "imagePath": "lib/images/class.jpg"
+      "imagePath": "https://static.wixstatic.com/media/030a37_6d0214341554445da67056c15a67b0af~mv2.jpg/v1/fill/w_980,h_784,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/030a37_6d0214341554445da67056c15a67b0af~mv2.jpg"
     },
     {
       "tag": "Discover",
       "title": "Amphitheater",
-      "imagePath": "lib/images/Amphitheater.jpg"
+      "imagePath": "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3782966841472613900"
     },
     {
       "tag": "Discover",
       "title": "Cafeteria",
-      "imagePath": "lib/images/cafe.jpg"
+      "imagePath": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=975803082482305"
     },
     {
       "tag": "Discover",
       "title": "Common Room",
-      "imagePath": "lib/images/commonroom.jpg"
+      "imagePath": "https://iqra.edu.pk/wp-content/uploads/2024/03/digitalmarketing-768x512.jpg"
     },
     {
       "tag": "Discover",
       "title": "Playground",
-      "imagePath": "lib/images/playground.jpg"
+      "imagePath": "https://iuisl.iqra.edu.pk/wp-content/uploads/2-1024x576.jpg"
     },
     {
       "tag": "Discover",
       "title": "Swimming Pool",
-      "imagePath": "lib/images/swimming.jpg"
+      "imagePath": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=549674481822160"
     },
     {
       "tag": "Discover",
       "title": "Webinar Room",
-      "imagePath": "lib/images/webinarroom.jpg"
+      "imagePath": "https://iqra.edu.pk/wp-content/uploads/2025/05/6556-768x512.jpg"
     }
   ],
   "panoramaImages": {
-    "Library": "lib/images/panoramas/library_panorama.jpg",
-    "Play Area": "lib/images/panoramas/play_area_panorama.jpg",
-    "Auditorium": "lib/images/panoramas/auditorium_panorama.jpg",
-    "Class Rooms": "lib/images/panoramas/class_rooms_panorama.jpg",
-    "Amphitheater": "lib/images/panoramas/amphitheater_panorama.jpg",
-    "Cafeteria": "lib/images/panoramas/cafeteria_panorama.jpg",
-    "Common Room": "lib/images/panoramas/common_room_panorama.jpg",
-    "Playground": "lib/images/panoramas/playground_panorama.jpg",
-    "Swimming Pool": "lib/images/panoramas/swimming_pool_panorama.jpg",
-    "Webinar Room": "lib/images/panoramas/webinar_room_panorama.jpg"
+    "Library": "assets/images/panoramas/library_panorama.jpg",
+    "Play Area": "assets/images/panoramas/play_area_panorama.jpg",
+    "Auditorium": "assets/images/panoramas/auditorium_panorama.jpg",
+    "Class Rooms": "assets/images/panoramas/class_rooms_panorama.jpg",
+    "Amphitheater": "assets/images/panoramas/amphitheater_panorama.jpg",
+    "Cafeteria": "assets/images/panoramas/cafeteria_panorama.jpg",
+    "Common Room": "assets/images/panoramas/common_room_panorama.jpg",
+    "Playground": "assets/images/panoramas/playground_panorama.jpg",
+    "Swimming Pool": "assets/images/panoramas/swimming_pool_panorama.jpg",
+    "Webinar Room": "assets/images/panoramas/webinar_room_panorama.jpg"
   },
-  "fallbackPanoramaImage": "lib/images/panoramas/fallback_panorama.jpg",
+  "fallbackPanoramaImage": "assets/images/panoramas/fallback_panorama.jpg",
   "panoramaHotspots": {
     "Library": [
       {
@@ -77,8 +77,7 @@
         "pitch": 10.0,
         "yaw": -45.0,
         "type": "info",
-        "text": "Library Info Desk",
-        "URL": "https://example.com/library-info"
+        "text": "Library Info Desk"
       }
     ],
     "Cafeteria": [
@@ -120,13 +119,6 @@
         "type": "scene",
         "sceneId": "Class Rooms",
         "text": "Go to Class Rooms"
-      },
-      {
-        "pitch": -5.0,
-        "yaw": 90.0,
-        "type": "info",
-        "text": "Auditorium Info",
-        "URL": "https://example.com/auditorium-info"
       }
     ],
     "Class Rooms": [
@@ -152,13 +144,6 @@
         "type": "scene",
         "sceneId": "Play Area",
         "text": "Go to Play Area"
-      },
-      {
-        "pitch": -10.0,
-        "yaw": -45.0,
-        "type": "info",
-        "text": "Amphitheater Info",
-        "URL": "https://example.com/amphitheater-info"
       }
     ],
     "Common Room": [
@@ -200,31 +185,9 @@
         "type": "scene",
         "sceneId": "Playground",
         "text": "Back to Playground"
-      },
-      {
-        "pitch": 10.0,
-        "yaw": 90.0,
-        "type": "info",
-        "text": "Swimming Pool Info",
-        "URL": "https://example.com/swimming-pool-info"
       }
     ],
-    "Webinar Room": [
-      {
-        "pitch": 0.0,
-        "yaw": -45.0,
-        "type": "scene",
-        "sceneId": "Common Room",
-        "text": "Go to Common Room"
-      },
-      {
-        "pitch": 5.0,
-        "yaw": 0.0,
-        "type": "info",
-        "text": "Webinar Room Info",
-        "URL": "https://example.com/webinar-room-info"
-      }
-    ]
+    "Webinar Room": []
   },
   "locationFeatures": {
     "Library": [
@@ -235,7 +198,7 @@
       },
       {
         "title": "Accessible Location",
-        "description": "Centrally located for easy access across the H-9 campus.",
+        "description": "Centrally located for easy access across the campus.",
         "actionType": "dialog"
       },
       {
@@ -247,7 +210,7 @@
     "Play Area": [
       {
         "title": "Open Space",
-        "description": "Spacious area for sports and recreation.",
+        "description": "Spacious area dedicated to sports and recreation.",
         "actionType": "navigate"
       },
       {
@@ -257,7 +220,7 @@
       },
       {
         "title": "Seating Areas",
-        "description": "Comfortable seating for relaxation.",
+        "description": "Comfortable seating for relaxation and socializing.",
         "actionType": "snackbar"
       }
     ],
@@ -268,132 +231,132 @@
         "actionType": "navigate"
       },
       {
-        "title": "Advanced Audio",
-        "description": "State-of-the-art sound system installed.",
+        "title": "Advanced Audio System",
+        "description": "State-of-the-art sound system for clear acoustics.",
         "actionType": "dialog"
       },
       {
-        "title": "Lighting System",
-        "description": "Dynamic lighting for performances.",
+        "title": "Dynamic Lighting",
+        "description": "Professional lighting setup for performances.",
         "actionType": "snackbar"
       }
     ],
     "Class Rooms": [
       {
         "title": "Smart Technology",
-        "description": "Equipped with smart boards and projectors.",
+        "description": "Equipped with interactive smart boards and projectors.",
         "actionType": "navigate"
       },
       {
         "title": "Comfortable Seating",
-        "description": "Ergonomic chairs for long sessions.",
+        "description": "Ergonomic chairs designed for extended sessions.",
         "actionType": "dialog"
       },
       {
-        "title": "Natural Light",
-        "description": "Large windows for a bright environment.",
+        "title": "Natural Lighting",
+        "description": "Large windows providing a bright and inviting environment.",
         "actionType": "snackbar"
       }
     ],
     "Amphitheater": [
       {
-        "title": "Outdoor Setting",
-        "description": "Open-air venue with scenic views.",
+        "title": "Outdoor Venue",
+        "description": "Open-air setting with scenic campus views.",
         "actionType": "navigate"
       },
       {
         "title": "Performance Stage",
-        "description": "Ideal for cultural and musical events.",
+        "description": "Dedicated stage for cultural and musical events.",
         "actionType": "dialog"
       },
       {
-        "title": "Seating Arrangement",
-        "description": "Tiered seating for optimal viewing.",
+        "title": "Tiered Seating",
+        "description": "Optimal viewing from graduated seating levels.",
         "actionType": "snackbar"
       }
     ],
     "Cafeteria": [
       {
         "title": "Diverse Menu",
-        "description": "Offers a wide variety of food options.",
+        "description": "Wide variety of food options to suit all tastes.",
         "actionType": "navigate"
       },
       {
-        "title": "Seating Availability",
-        "description": "Ample seating for students and staff.",
+        "title": "Ample Seating",
+        "description": "Plenty of space for students and staff.",
         "actionType": "dialog"
       },
       {
-        "title": "Clean Environment",
-        "description": "Maintained for hygiene and comfort.",
+        "title": "Hygiene Standards",
+        "description": "Maintained to ensure cleanliness and comfort.",
         "actionType": "snackbar"
       }
     ],
     "Common Room": [
       {
         "title": "Relaxation Zone",
-        "description": "A cozy space for students to unwind.",
+        "description": "Cozy space for students to unwind and socialize.",
         "actionType": "navigate"
       },
       {
-        "title": "Entertainment",
-        "description": "Equipped with games and media options.",
+        "title": "Entertainment Options",
+        "description": "Equipped with games and multimedia facilities.",
         "actionType": "dialog"
       },
       {
         "title": "Charging Stations",
-        "description": "Convenient power outlets for devices.",
+        "description": "Convenient power outlets for electronic devices.",
         "actionType": "snackbar"
       }
     ],
     "Playground": [
       {
         "title": "Play Structures",
-        "description": "Safe and fun equipment for all ages.",
+        "description": "Safe and engaging equipment for recreational activities.",
         "actionType": "navigate"
       },
       {
         "title": "Safety Features",
-        "description": "Designed with child safety in mind.",
+        "description": "Designed with student safety as a priority.",
         "actionType": "dialog"
       },
       {
-        "title": "Open Area",
-        "description": "Spacious for group activities.",
+        "title": "Open Layout",
+        "description": "Spacious area suitable for group activities.",
         "actionType": "snackbar"
       }
     ],
     "Swimming Pool": [
       {
-        "title": "Lifeguard Service",
-        "description": "Professional supervision for safety.",
+        "title": "Professional Supervision",
+        "description": "Lifeguard services available for safety.",
         "actionType": "navigate"
       },
       {
         "title": "Clean Facilities",
-        "description": "Well-maintained changing and shower areas.",
+        "description": "Well-maintained changing rooms and showers.",
         "actionType": "dialog"
       },
       {
         "title": "Poolside Area",
-        "description": "Relaxing area for visitors.",
+        "description": "Relaxing seating around the pool.",
         "actionType": "snackbar"
       }
     ],
     "Webinar Room": [
       {
         "title": "High-Speed Internet",
-        "description": "Ensures seamless virtual meetings.",
+        "description": "Reliable connectivity for virtual meetings and classes.",
         "actionType": "navigate"
       },
       {
-        "title": "Video Equipment",
-        "description": "Advanced tools for presentations.",
+        "title": "Advanced AV Equipment",
+        "description": "Professional tools for presentations and webinars.",
         "actionType": "dialog"
       },
       {
-        "title": "Soundproofing",
-        "description": "Designed for clear audio quality.",
+        "title": "Soundproof Environment",
+        "description": "Ensures clear audio without external interference.",
         "actionType": "snackbar"
       }
     ]
