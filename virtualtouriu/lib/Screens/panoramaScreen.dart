@@ -335,6 +335,8 @@ class _PanoramaScreenState extends State<PanoramaScreen>
             animSpeed: 1.0,
             sensitivity: 2.0,
             zoom: _zoomLevel,
+            hotspots: _buildHotspots(),
+            onTap: (longitude, latitude, tilt) => _toggleControls(),
             child: Image.asset(
               panoramaImage,
               fit: BoxFit.cover,
@@ -365,8 +367,6 @@ class _PanoramaScreenState extends State<PanoramaScreen>
                     ),
                   ),
             ),
-            hotspots: _buildHotspots(),
-            onTap: (longitude, latitude, tilt) => _toggleControls(),
           ),
 
           // Fade overlay when controls are hidden

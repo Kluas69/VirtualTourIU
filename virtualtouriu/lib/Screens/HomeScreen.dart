@@ -2,13 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:virtualtouriu/Screens/categories.dart';
 import 'package:virtualtouriu/Screens/desktop_home_screen.dart';
 import 'package:virtualtouriu/Screens/mobile_home_screen.dart';
-
 import 'package:virtualtouriu/core/constants.dart';
 import 'package:virtualtouriu/core/widgets/location_card.dart';
 import 'package:virtualtouriu/responsive/Responsive_Layout.dart';
@@ -90,7 +88,7 @@ class HomeScreen extends StatelessWidget {
         return Scaffold(
           body: Stack(
             children: [
-              // Premium background with subtle pattern
+              // Premium background
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -132,177 +130,20 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              // Responsive body
+              // Responsive body - NO HEADER HERE, each screen has its own
               const ResponsiveLayout(
                 mobileBody: MobileHomeScreen(),
                 tabletBody: MobileHomeScreen(),
                 desktopBody: DesktopHomeScreen(),
               ),
-
-              // Top navigation bar with glassmorphism
-              SafeArea(
-                child: _buildTopNavigationBar(context, isDark, themeProvider),
-              ),
             ],
           ),
-
-          // Enhanced FAB with animation
-          floatingActionButton: _buildEnhancedFAB(context, isDark),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         );
       },
     );
   }
 
-  // Premium top navigation bar
-  static Widget _buildTopNavigationBar(
-    BuildContext context,
-    bool isDark,
-    ThemeProvider themeProvider,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Logo/Brand
-          FadeInLeft(
-            duration: const Duration(milliseconds: 600),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color:
-                    isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : Colors.black.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color:
-                      isDark
-                          ? Colors.white.withOpacity(0.1)
-                          : Colors.black.withOpacity(0.05),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color:
-                        isDark
-                            ? Colors.black.withOpacity(0.3)
-                            : Colors.black.withOpacity(0.05),
-                    blurRadius: 20,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.school,
-                    size: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'IQRA Virtual Tour',
-                    style: GoogleFonts.roboto(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Theme toggle with enhanced design
-          FadeInRight(
-            duration: const Duration(milliseconds: 600),
-            child: Container(
-              decoration: BoxDecoration(
-                color:
-                    isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : Colors.black.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color:
-                      isDark
-                          ? Colors.white.withOpacity(0.1)
-                          : Colors.black.withOpacity(0.05),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color:
-                        isDark
-                            ? Colors.black.withOpacity(0.3)
-                            : Colors.black.withOpacity(0.05),
-                    blurRadius: 20,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                icon: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) {
-                    return RotationTransition(
-                      turns: animation,
-                      child: FadeTransition(opacity: animation, child: child),
-                    );
-                  },
-                  child: Icon(
-                    isDark ? Icons.light_mode : Icons.dark_mode,
-                    key: ValueKey(isDark),
-                    color: isDark ? Colors.amber : Colors.indigo,
-                  ),
-                ),
-                onPressed: () => themeProvider.toggleTheme(),
-                tooltip: isDark ? 'Light Mode' : 'Dark Mode',
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Enhanced FAB with pulse animation
-  static Widget _buildEnhancedFAB(BuildContext context, bool isDark) {
-    return FadeInUp(
-      duration: const Duration(milliseconds: 800),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).primaryColor.withOpacity(0.3),
-              blurRadius: 20,
-              spreadRadius: 2,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: FloatingActionButton.extended(
-          onPressed: () => _navigateToCategories(context),
-          tooltip: 'Start Virtual Tour',
-          backgroundColor: Theme.of(context).primaryColor,
-          elevation: 0,
-          icon: const Icon(Icons.explore, size: 24),
-          label: Text(
-            'Start Tour',
-            style: GoogleFonts.roboto(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  static void _navigateToCategories(BuildContext context) {
+  static void navigateToCategories(BuildContext context) {
     Navigator.push(
       context,
       PageRouteBuilder(
@@ -325,7 +166,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Premium hero section with parallax effect
   static Widget buildHeroSection({
     required BuildContext context,
     required double fontSize,
@@ -339,7 +179,6 @@ class HomeScreen extends StatelessWidget {
       width: double.infinity,
       child: Stack(
         children: [
-          // Hero image with ken burns effect
           ShaderMask(
             shaderCallback: (rect) {
               return LinearGradient(
@@ -390,8 +229,6 @@ class HomeScreen extends StatelessWidget {
                   ),
             ),
           ),
-
-          // Premium gradient overlay
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -406,8 +243,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Content with enhanced typography
           Positioned(
             bottom: size.height * 0.12,
             left: size.width * 0.08,
@@ -415,7 +250,6 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Subtitle badge
                 FadeInUp(
                   duration: const Duration(milliseconds: 600),
                   child: Container(
@@ -434,7 +268,11 @@ class HomeScreen extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.location_on, color: Colors.white, size: 16),
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: 16,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'H-9 Islamabad Campus',
@@ -450,8 +288,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Main title with glow effect
                 FadeInUp(
                   duration: const Duration(milliseconds: 700),
                   delay: const Duration(milliseconds: 200),
@@ -476,8 +312,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                // Animated subtitle
                 FadeInUp(
                   duration: const Duration(milliseconds: 800),
                   delay: const Duration(milliseconds: 400),
@@ -518,8 +352,6 @@ class HomeScreen extends StatelessWidget {
                     repeatForever: true,
                   ),
                 ),
-
-                // Call-to-action hint
                 const SizedBox(height: 24),
                 FadeInUp(
                   duration: const Duration(milliseconds: 900),
@@ -552,7 +384,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Enhanced info section with stats
   static Widget buildInfoSection({
     required BuildContext context,
     required bool isMobile,
@@ -569,7 +400,6 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section badge
           FadeInUp(
             duration: const Duration(milliseconds: 600),
             child: Container(
@@ -591,8 +421,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: isMobile ? 16 : 20),
-
-          // Main heading
           FadeInUp(
             duration: const Duration(milliseconds: 700),
             delay: const Duration(milliseconds: 100),
@@ -608,8 +436,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: isMobile ? 12 : 16),
-
-          // Description
           FadeInUp(
             duration: const Duration(milliseconds: 800),
             delay: const Duration(milliseconds: 200),
@@ -623,9 +449,84 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: isMobile ? 32 : 40),
+
+          // 3D Tour Feature Block
+          FadeInUp(
+            duration: const Duration(milliseconds: 850),
+            delay: const Duration(milliseconds: 250),
+            child: Container(
+              padding: EdgeInsets.all(isMobile ? 24 : 32),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    theme.primaryColor.withOpacity(0.15),
+                    theme.primaryColor.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: theme.primaryColor.withOpacity(0.3),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.primaryColor.withOpacity(0.1),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(
+                      Icons.view_in_ar_rounded,
+                      size: isMobile ? 40 : 56,
+                      color: theme.primaryColor,
+                    ),
+                  ),
+                  SizedBox(width: isMobile ? 16 : 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Immersive 3D Experience',
+                          style: GoogleFonts.roboto(
+                            fontSize: isMobile ? 18 : 24,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Navigate through our campus in stunning 360-degree panoramic views',
+                          style: GoogleFonts.roboto(
+                            fontSize: isMobile ? 14 : 16,
+                            color: theme.textTheme.bodyMedium?.color
+                                ?.withOpacity(0.7),
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           SizedBox(height: isMobile ? 24 : 32),
 
-          // Stats row
+          // Stats
           FadeInUp(
             duration: const Duration(milliseconds: 900),
             delay: const Duration(milliseconds: 300),
@@ -634,9 +535,9 @@ class HomeScreen extends StatelessWidget {
               runSpacing: 16,
               children: [
                 _buildStatCard(
-                  icon: Icons.photo_camera,
-                  value: '360°',
-                  label: 'Panoramic Views',
+                  icon: Icons.view_in_ar_rounded,
+                  value: '3D',
+                  label: 'Virtual Tour',
                   isDark: isDark,
                   primaryColor: theme.primaryColor,
                 ),
@@ -655,6 +556,19 @@ class HomeScreen extends StatelessWidget {
                   primaryColor: theme.primaryColor,
                 ),
               ],
+            ),
+          ),
+
+          // Start Tour Button (Futuristic & Animated)
+          SizedBox(height: isMobile ? 32 : 40),
+          FadeInUp(
+            duration: const Duration(milliseconds: 950),
+            delay: const Duration(milliseconds: 350),
+            child: Center(
+              child: _FuturisticTourButton(
+                isMobile: isMobile,
+                onPressed: () => navigateToCategories(context),
+              ),
             ),
           ),
         ],
@@ -723,7 +637,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Professional carousel with smooth animations
   static Widget buildCarousel({
     required BuildContext context,
     required double cardHeight,
@@ -747,8 +660,6 @@ class HomeScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final cardIndex = index % effectiveCards.length;
         final isSelected = cardIndex == selectedIndex;
-
-        // Dynamic card width based on device
         final cardWidth = size.width * (isDesktop ? 0.22 : 0.80);
 
         return TweenAnimationBuilder<double>(
@@ -771,7 +682,6 @@ class HomeScreen extends StatelessWidget {
                       data: effectiveCards[cardIndex],
                       isHovered: isSelected,
                       onTap: () {
-                        // Navigate to detail screen
                         Navigator.push(
                           context,
                           PageRouteBuilder(
@@ -807,6 +717,180 @@ class HomeScreen extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+// Futuristic Animated Tour Button
+class _FuturisticTourButton extends StatefulWidget {
+  final bool isMobile;
+  final VoidCallback onPressed;
+
+  const _FuturisticTourButton({
+    required this.isMobile,
+    required this.onPressed,
+  });
+
+  @override
+  State<_FuturisticTourButton> createState() => _FuturisticTourButtonState();
+}
+
+class _FuturisticTourButtonState extends State<_FuturisticTourButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _glowAnimation;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _glowAnimation = Tween<double>(
+      begin: 0.3,
+      end: 0.6,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _isHovered ? 1.08 : _scaleAnimation.value,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.primaryColor.withOpacity(_glowAnimation.value),
+                    blurRadius: _isHovered ? 40 : 30,
+                    spreadRadius: _isHovered ? 8 : 4,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: theme.primaryColor.withOpacity(0.2),
+                    blurRadius: 60,
+                    spreadRadius: 10,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: widget.onPressed,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: widget.isMobile ? 36 : 56,
+                      vertical: widget.isMobile ? 18 : 24,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          theme.primaryColor,
+                          theme.primaryColor.withOpacity(0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.2),
+                        width: 2,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.explore_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Start Virtual Tour',
+                              style: GoogleFonts.roboto(
+                                fontSize: widget.isMobile ? 18 : 22,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 1.0,
+                                height: 1.2,
+                              ),
+                            ),
+                            Text(
+                              'Explore in 360°',
+                              style: GoogleFonts.roboto(
+                                fontSize: widget.isMobile ? 11 : 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white.withOpacity(0.9),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 12),
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(
+                            begin: 0.0,
+                            end: _isHovered ? 10.0 : 0.0,
+                          ),
+                          duration: const Duration(milliseconds: 300),
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(value, 0),
+                              child: const Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

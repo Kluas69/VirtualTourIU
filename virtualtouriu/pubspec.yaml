@@ -39,6 +39,8 @@ dependencies:
   # Storage
   shared_preferences: ^2.2.3
 
+  http: ^1.1.0
+
   # WebView (Cross-platform)
   webview_flutter: ^4.4.2
   webview_flutter_web: ^0.2.2+3 # Required for web support
