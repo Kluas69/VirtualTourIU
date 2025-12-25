@@ -18,26 +18,27 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
   late PageController _controller;
   int _selectedIndex = 0;
   bool _isInteracting = false;
+  bool _showLeftArrow = false;
+  bool _showRightArrow = true;
 
   @override
   void initState() {
     super.initState();
     final middleIndex = AppConstants.locationCards.length ~/ 2;
 
-    // Professional viewport fractions for desktop - shows 3-4 cards perfectly
     final double width =
         WidgetsBinding.instance.window.physicalSize.width /
         WidgetsBinding.instance.window.devicePixelRatio;
 
     final double viewportFraction;
     if (width > 2000) {
-      viewportFraction = 0.26; // Ultra-wide: ~4 cards visible
+      viewportFraction = 0.26;
     } else if (width > 1600) {
-      viewportFraction = 0.30; // Wide: ~3.5 cards
+      viewportFraction = 0.30;
     } else if (width > 1200) {
-      viewportFraction = 0.34; // Standard desktop: ~3 cards
+      viewportFraction = 0.34;
     } else {
-      viewportFraction = 0.38; // Smaller desktop: ~2.5 cards
+      viewportFraction = 0.38;
     }
 
     _controller = PageController(
@@ -53,10 +54,32 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
           setState(() {
             _selectedIndex = newIndex;
             _isInteracting = true;
+            _updateArrowVisibility();
           });
         }
       }
     });
+
+    _updateArrowVisibility();
+  }
+
+  void _updateArrowVisibility() {
+    setState(() {
+      _showLeftArrow = _selectedIndex > 0;
+      _showRightArrow = _selectedIndex < AppConstants.locationCards.length - 1;
+    });
+  }
+
+  void _navigateToPage(int delta) {
+    final newIndex = (_selectedIndex + delta).clamp(
+      0,
+      AppConstants.locationCards.length - 1,
+    );
+    _controller.animateToPage(
+      newIndex,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
@@ -69,6 +92,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDark;
+    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
 
     return FutureBuilder<void>(
@@ -86,16 +110,12 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
           );
         }
 
-        // PROFESSIONAL GOLDEN RATIOS FOR DESKTOP
         final double heroHeight = (size.height * 0.52).clamp(500.0, 650.0);
-
-        // Ideal card height: 16:9 aspect ratio, perfect for desktop galleries
         final double idealCardHeight = (size.width * 0.20).clamp(420.0, 520.0);
         final double cardSectionPadding = size.width * 0.04;
 
         return Stack(
           children: [
-            // Background blur
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -128,7 +148,6 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  // Hero Section - Professional proportions
                   FadeInDown(
                     duration: const Duration(milliseconds: 600),
                     child: SizedBox(
@@ -143,7 +162,6 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                   ),
                   SizedBox(height: size.height * 0.04),
 
-                  // Info Section
                   FadeInUp(
                     duration: const Duration(milliseconds: 700),
                     child: Padding(
@@ -158,7 +176,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                   ),
                   SizedBox(height: size.height * 0.06),
 
-                  // CAROUSEL SECTION - PROFESSIONAL DESKTOP SIZING
+                  // Enhanced carousel with navigation arrows
                   FadeInUp(
                     duration: const Duration(milliseconds: 900),
                     delay: const Duration(milliseconds: 200),
@@ -167,41 +185,107 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
                         horizontal: cardSectionPadding,
                         vertical: size.height * 0.03,
                       ),
-                      constraints: BoxConstraints(
-                        maxWidth: 1600,
-                      ), // Max width for ultra-wide screens
+                      constraints: const BoxConstraints(maxWidth: 1600),
                       child: Column(
                         children: [
-                          // Cards container with perfect spacing
-                          SizedBox(
-                            height:
-                                idealCardHeight + 40, // Extra space for shadows
-                            child: HomeScreen.buildCarousel(
-                              context: context,
-                              cardHeight: idealCardHeight,
-                              controller: _controller,
-                              selectedIndex: _selectedIndex,
-                              isInteracting: _isInteracting,
-                              onPageChanged:
-                                  (index) =>
-                                      setState(() => _selectedIndex = index),
-                              isDesktop: true,
-                              onTap: (index) {},
-                              setInteracting: (value) {},
-                            ),
+                          // Navigation arrows + carousel
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Cards
+                              SizedBox(
+                                height: idealCardHeight + 40,
+                                child: HomeScreen.buildCarousel(
+                                  context: context,
+                                  cardHeight: idealCardHeight,
+                                  controller: _controller,
+                                  selectedIndex: _selectedIndex,
+                                  isInteracting: _isInteracting,
+                                  onPageChanged:
+                                      (index) => setState(
+                                        () => _selectedIndex = index,
+                                      ),
+                                  isDesktop: true,
+                                  onTap: (index) {},
+                                  setInteracting: (value) {},
+                                ),
+                              ),
+
+                              // Left arrow
+                              if (_showLeftArrow)
+                                Positioned(
+                                  left: -20,
+                                  child: _buildNavigationArrow(
+                                    icon: Icons.arrow_back_ios_new_rounded,
+                                    onPressed: () => _navigateToPage(-1),
+                                    isDark: isDark,
+                                    theme: theme,
+                                  ),
+                                ),
+
+                              // Right arrow
+                              if (_showRightArrow)
+                                Positioned(
+                                  right: -20,
+                                  child: _buildNavigationArrow(
+                                    icon: Icons.arrow_forward_ios_rounded,
+                                    onPressed: () => _navigateToPage(1),
+                                    isDark: isDark,
+                                    theme: theme,
+                                  ),
+                                ),
+                            ],
                           ),
-                          SizedBox(height: 24),
-                          // Professional indicator
+                          const SizedBox(height: 32),
+
+                          // Page indicator
                           SmoothPageIndicator(
                             controller: _controller,
                             count: AppConstants.locationCards.length,
                             effect: WormEffect(
-                              dotWidth: 12,
-                              dotHeight: 12,
-                              spacing: 8,
-                              // activeDotColor: theme.primaryColor,
-                              dotColor: Colors.grey.shade400,
+                              dotWidth: 10,
+                              dotHeight: 10,
+                              spacing: 12,
+                              activeDotColor: theme.primaryColor,
+                              dotColor:
+                                  isDark
+                                      ? Colors.grey.shade700
+                                      : Colors.grey.shade400,
                               paintStyle: PaintingStyle.fill,
+                            ),
+                          ),
+
+                          // Card counter
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  isDark
+                                      ? Colors.white.withOpacity(0.05)
+                                      : Colors.black.withOpacity(0.04),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color:
+                                    isDark
+                                        ? Colors.white.withOpacity(0.1)
+                                        : Colors.black.withOpacity(0.06),
+                              ),
+                            ),
+                            child: Text(
+                              '${_selectedIndex + 1} / ${AppConstants.locationCards.length}',
+                              style: TextStyle(
+                                color:
+                                    isDark
+                                        ? Colors.white.withOpacity(0.7)
+                                        : Colors.black.withOpacity(0.6),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.0,
+                              ),
                             ),
                           ),
                         ],
@@ -215,6 +299,62 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildNavigationArrow({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required bool isDark,
+    required ThemeData theme,
+  }) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            customBorder: const CircleBorder(),
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color:
+                    isDark
+                        ? Colors.white.withOpacity(0.1)
+                        : Colors.white.withOpacity(0.95),
+                border: Border.all(
+                  color:
+                      isDark
+                          ? Colors.white.withOpacity(0.2)
+                          : Colors.black.withOpacity(0.08),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isDark ? 0.4 : 0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                  BoxShadow(
+                    color: theme.primaryColor.withOpacity(0.1),
+                    blurRadius: 30,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Icon(
+                icon,
+                color: isDark ? Colors.white : theme.primaryColor,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

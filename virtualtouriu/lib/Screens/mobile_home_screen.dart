@@ -53,6 +53,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDark;
+    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
 
     return FutureBuilder<void>(
@@ -70,12 +71,12 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
           );
         }
 
-        final double heroHeight = size.height * 0.70;
-        final double cardHeight = size.height * 0.55;
+        // Mobile-optimized proportions
+        final double heroHeight = size.height * 0.65;
+        final double cardHeight = size.height * 0.5;
 
         return Stack(
           children: [
-            // Background blur
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -116,7 +117,7 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                       width: double.infinity,
                       child: HomeScreen.buildHeroSection(
                         context: context,
-                        fontSize: size.width * 0.12,
+                        fontSize: size.width * 0.1,
                         heightFactor: 1.0,
                       ),
                     ),
@@ -126,56 +127,129 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
                   // Info Section
                   FadeInUp(
                     duration: const Duration(milliseconds: 700),
-                    child: HomeScreen.buildInfoSection(
-                      context: context,
-                      isMobile: true,
-                    ),
-                  ),
-                  SizedBox(height: size.height * 0.06),
-
-                  // Carousel Section
-                  FadeInUp(
-                    duration: const Duration(milliseconds: 900),
-                    delay: const Duration(milliseconds: 200),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: size.width * 0.04,
+                        horizontal: size.width * 0.06,
+                      ),
+                      child: HomeScreen.buildInfoSection(
+                        context: context,
+                        isMobile: true,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.05),
+
+                  // Featured Section Header
+                  FadeInUp(
+                    duration: const Duration(milliseconds: 800),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: size.width * 0.06,
                       ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: cardHeight,
-                            child: HomeScreen.buildCarousel(
-                              context: context,
-                              cardHeight: cardHeight,
-                              controller: _controller,
-                              selectedIndex: _selectedIndex,
-                              isInteracting: _isInteracting,
-                              onPageChanged:
-                                  (index) =>
-                                      setState(() => _selectedIndex = index),
-                              isDesktop: false,
-                              onTap: (index) {},
-                              setInteracting: (value) {},
+                          Text(
+                            'FEATURED LOCATIONS',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: theme.primaryColor,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2.0,
+                              fontSize: 11,
                             ),
                           ),
-                          SizedBox(height: 24),
-                          SmoothPageIndicator(
-                            controller: _controller,
-                            count: AppConstants.locationCards.length,
-                            effect: ExpandingDotsEffect(
-                              dotWidth: 10,
-                              dotHeight: 10,
-                              spacing: 8,
-                              activeDotColor: Theme.of(context).primaryColor,
-                              dotColor: Colors.grey.shade400,
+                          const SizedBox(height: 8),
+                          Text(
+                            'Explore Our Campus',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 26,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: size.height * 0.12),
+                  SizedBox(height: size.height * 0.03),
+
+                  // Carousel
+                  FadeInUp(
+                    duration: const Duration(milliseconds: 900),
+                    delay: const Duration(milliseconds: 100),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: cardHeight,
+                          child: HomeScreen.buildCarousel(
+                            context: context,
+                            cardHeight: cardHeight,
+                            controller: _controller,
+                            selectedIndex: _selectedIndex,
+                            isInteracting: _isInteracting,
+                            onPageChanged:
+                                (index) =>
+                                    setState(() => _selectedIndex = index),
+                            isDesktop: false,
+                            onTap: (index) {},
+                            setInteracting: (value) {},
+                          ),
+                        ),
+                        SizedBox(height: size.height * 0.03),
+
+                        // Page Indicator
+                        SmoothPageIndicator(
+                          controller: _controller,
+                          count: AppConstants.locationCards.length,
+                          effect: WormEffect(
+                            dotWidth: 8,
+                            dotHeight: 8,
+                            spacing: 8,
+                            activeDotColor: theme.primaryColor,
+                            dotColor:
+                                isDark
+                                    ? Colors.grey.shade700
+                                    : Colors.grey.shade400,
+                            paintStyle: PaintingStyle.fill,
+                          ),
+                        ),
+
+                        // Card Counter
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                isDark
+                                    ? Colors.white.withOpacity(0.05)
+                                    : Colors.black.withOpacity(0.04),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color:
+                                  isDark
+                                      ? Colors.white.withOpacity(0.1)
+                                      : Colors.black.withOpacity(0.06),
+                            ),
+                          ),
+                          child: Text(
+                            '${_selectedIndex + 1} / ${AppConstants.locationCards.length}',
+                            style: TextStyle(
+                              color:
+                                  isDark
+                                      ? Colors.white.withOpacity(0.7)
+                                      : Colors.black.withOpacity(0.6),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.08),
                 ],
               ),
             ),
